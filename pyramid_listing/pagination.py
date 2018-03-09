@@ -1,7 +1,8 @@
-''' Pagination - calculate pagination information '''
+''' pyramid_listing.pagination - calculate pagination information '''
 
 
 def get_as_int(store, key, default):
+    ''' Return the value for key as integer from a dictionary, else default '''
     try:
         value = store.get(key, default)
         return int(value)
