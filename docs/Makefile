@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = python -msphinx
-SPHINXPROJ    = pyramid_list_pagination
+SPHINXPROJ    = pyramid_listing
 SOURCEDIR     = .
 BUILDDIR      = _build
 

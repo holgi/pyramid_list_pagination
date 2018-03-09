@@ -1,5 +1,5 @@
-Welcome to Pyramid List Pagination's documentation!
-======================================
+Welcome to Pyramid Listing's documentation!
+===========================================
 
 .. toctree::
    :maxdepth: 2

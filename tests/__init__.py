@@ -1,11 +1,11 @@
-'''Tests for `pyramid_list_pagination` package.'''
+'''Tests for `pyramid_listing` package.'''
 
 import pytest
 
 
 class DummyConfig:
 
-    def __init__(self, settings, prefix='list_pagination'):
+    def __init__(self, settings, prefix='pyramid_listing'):
         self.settings = {f'{prefix}.{k}': v for k, v in settings.items()}
 
     def get_settings(self):

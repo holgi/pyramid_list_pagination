@@ -199,7 +199,7 @@ def includeme(config):
     a symetric page window
     '''
     settings = config.get_settings()
-    prefix = 'list_pagination'
+    prefix = 'pyramid_listing'
 
     # set the right values if a simple page window size is given
     window_size = settings.get(f'{prefix}.page_window_size', None)

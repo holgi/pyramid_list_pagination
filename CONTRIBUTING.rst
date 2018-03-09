@@ -15,7 +15,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/holgi/pyramid_list_pagination/issues.
+Report bugs at https://github.com/holgi/pyramid_listing/issues.
 
 If you are reporting a bug, please include:
 
@@ -45,7 +45,7 @@ articles, and such.
 Submit Feedback
 ~~~~~~~~~~~~~~~
 
-The best way to send feedback is to file an issue at https://github.com/holgi/pyramid_list_pagination/issues.
+The best way to send feedback is to file an issue at https://github.com/holgi/pyramid_listing/issues.
 
 If you are proposing a feature:
 
@@ -57,17 +57,17 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `pyramid_list_pagination` for local development.
+Ready to contribute? Here's how to set up `pyramid_listing` for local development.
 
-1. Fork the `pyramid_list_pagination` repo on GitHub.
+1. Fork the `pyramid_listing` repo on GitHub.
 2. Clone your fork locally::
 
-    $ git clone git@github.com:your_name_here/pyramid_list_pagination.git
+    $ git clone git@github.com:your_name_here/pyramid_listing.git
 
 3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
 
-    $ mkvirtualenv pyramid_list_pagination
-    $ cd pyramid_list_pagination/
+    $ mkvirtualenv pyramid_listing
+    $ cd pyramid_listing/
     $ python setup.py develop
 
 4. Create a branch for local development::
@@ -79,7 +79,7 @@ Ready to contribute? Here's how to set up `pyramid_list_pagination` for local de
 5. When you're done making changes, check that your changes pass flake8 and the
    tests, including testing other Python versions with tox::
 
-    $ flake8 pyramid_list_pagination tests
+    $ flake8 pyramid_listing tests
     $ python setup.py test or py.test
     $ tox
 
@@ -103,7 +103,7 @@ Before you submit a pull request, check that it meets these guidelines:
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
 3. The pull request should work for Python 2.7, 3.4, 3.5 and 3.6, and for PyPy. Check
-   https://travis-ci.org/holgi/pyramid_list_pagination/pull_requests
+   https://travis-ci.org/holgi/pyramid_listing/pull_requests
    and make sure that the tests pass for all supported Python versions.
 
 Tips
@@ -111,7 +111,7 @@ Tips
 
 To run a subset of tests::
 
-$ py.test tests.test_pyramid_list_pagination
+$ py.test tests.test_pyramid_listing
 
 
 Deploying

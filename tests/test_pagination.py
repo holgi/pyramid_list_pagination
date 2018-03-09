@@ -1,4 +1,4 @@
-'''Tests for `pyramid_list_pagination.pagination` Pagination class.'''
+'''Tests for `pyramid_listing.pagination` Pagination class.'''
 
 import pytest
 
@@ -15,14 +15,14 @@ from . import DummyConfig, DummyRequest
         ]
     )
 def test_get_as_int(data, key, default, expected):
-    from pyramid_list_pagination import pagination
-    assert pagination.get_as_int(data, key, default) == expected
+    from pyramid_listing.pagination import get_as_int
+    assert get_as_int(data, key, default) == expected
 
 
 def test_pagination_init():
-    from pyramid_list_pagination import pagination
+    from pyramid_listing.pagination import Pagination
     request = DummyRequest({'p': 2})
-    pages = pagination.Pagination(request, 100)
+    pages = Pagination(request, 100)
     assert pages.items_total == 100
     assert pages.items_per_page is not None
     assert pages.first is not None
@@ -37,9 +37,9 @@ def test_pagination_init():
 
 
 def test_pagination_init_with_no_items():
-    from pyramid_list_pagination import pagination
+    from pyramid_listing.pagination import Pagination
     request = DummyRequest({'p': 2})
-    pages = pagination.Pagination(request, 0)
+    pages = Pagination(request, 0)
     assert pages.items_total == 0
     assert pages.items_per_page is not None
     assert pages.first is None
@@ -58,9 +58,9 @@ def test_pagination_init_with_no_items():
     [({}, 12), ({'n': 25,}, 25), ({'n': 'no number'}, 12)]
     )
 def test_pagination_set_items_per_page_no_session(get, expected):
-    from pyramid_list_pagination import pagination
+    from pyramid_listing.pagination import Pagination
     request = DummyRequest(get)
-    pages = pagination.Pagination(request, 100)
+    pages = Pagination(request, 100)
     assert pages.items_per_page == expected
 
 
@@ -78,9 +78,9 @@ def test_pagination_set_items_per_page_no_session(get, expected):
         ]
     )
 def test_pagination_set_items_per_page_with_session(get, session, expected):
-    from pyramid_list_pagination import pagination
+    from pyramid_listing.pagination import Pagination
     request = DummyRequest(get, session)
-    pages = pagination.Pagination(request, 100)
+    pages = Pagination(request, 100)
     assert pages.items_per_page == expected
     assert request.session['items_per_page'] == expected
 
@@ -107,9 +107,9 @@ def test_pagination_set_items_per_page_with_session(get, session, expected):
         ]
     )
 def test_pagination_calculate_page_numbers(count, page, items, expected):
-    from pyramid_list_pagination import pagination
+    from pyramid_listing.pagination import Pagination
     request = DummyRequest({'p': page, 'n': items})
-    pages = pagination.Pagination(request, count)
+    pages = Pagination(request, count)
     assert pages.first == expected[0]
     assert pages.prev == pages.previous == expected[1]
     assert pages.current == expected[2]
@@ -151,14 +151,14 @@ def test_pagination_calculate_page_numbers(count, page, items, expected):
     )
 def test_pagination_calculate_window(count, page, left, right, expected):
     ''' calculation of related pages '''
-    from pyramid_list_pagination import pagination
+    from pyramid_listing.pagination import Pagination
     request = DummyRequest({'p': page, 'n': 10})
-    pagination.Pagination.page_window_left = left
-    pagination.Pagination.page_window_right = right
-    pages = pagination.Pagination(request, count)
+    Pagination.page_window_left = left
+    Pagination.page_window_right = right
+    pages = Pagination(request, count)
     assert pages.window == expected
-    pagination.Pagination.page_window_left = 3
-    pagination.Pagination.page_window_right = 3
+    Pagination.page_window_left = 3
+    Pagination.page_window_right = 3
 
 
 @pytest.mark.parametrize(
@@ -174,25 +174,25 @@ def test_pagination_calculate_window(count, page, left, right, expected):
         ]
     )
 def test_pagination_validate_page(first, last, check, expected):
-    from pyramid_list_pagination import pagination
+    from pyramid_listing.pagination import Pagination
     request = DummyRequest()
-    pages = pagination.Pagination(request, 1)
+    pages = Pagination(request, 1)
     pages.first = first
     pages.last = last
     assert pages.validate_page(check) == expected
 
 
 def test_pagination_validate_page_returns_default():
-    from pyramid_list_pagination import pagination
+    from pyramid_listing.pagination import Pagination
     request = DummyRequest()
-    pages = pagination.Pagination(request, 1)
+    pages = Pagination(request, 1)
     assert pages.validate_page(2, 'default') == 'default'
 
 
 def test_pagination_validate_page_returns_default_on_no_items():
-    from pyramid_list_pagination import pagination
+    from pyramid_listing.pagination import Pagination
     request = DummyRequest()
-    pages = pagination.Pagination(request, 0)
+    pages = Pagination(request, 0)
     pages.first = 1
     pages.last = 3
     assert pages.validate_page(2, 'default') == 'default'

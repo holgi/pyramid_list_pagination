@@ -12,7 +12,7 @@ To install Pyramid List Pagination, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install pyramid_list_pagination
+    $ pip install pyramid_listing
 
 This is the preferred method to install Pyramid List Pagination, as it will always install the most recent stable release.
 
@@ -32,13 +32,13 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/holgi/pyramid_list_pagination
+    $ git clone git://github.com/holgi/pyramid_listing
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl  -OL https://github.com/holgi/pyramid_list_pagination/tarball/master
+    $ curl  -OL https://github.com/holgi/pyramid_listing/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/holgi/pyramid_list_pagination
-.. _tarball: https://github.com/holgi/pyramid_list_pagination/tarball/master
+.. _Github repo: https://github.com/holgi/pyramid_listing
+.. _tarball: https://github.com/holgi/pyramid_listing/tarball/master

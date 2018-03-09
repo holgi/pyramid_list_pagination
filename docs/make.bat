@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=pyramid_list_pagination
+set SPHINXPROJ=pyramid_listing
 
 if "%1" == "" goto help
 

@@ -1,6 +1,6 @@
-'''Tests for `pyramid_list_pagination.pagination` includeme() function.
+'''Tests for `pyramid_listing.pagination` includeme() function.
 
-These tests are separate from the `pyramid_list_pagination.pagination` tests
+These tests are separate from the `pyramid_listing.pagination` tests
 to provide isolation while configuring the pagination class
 '''
 
@@ -19,14 +19,14 @@ from . import DummyConfig, DummyRequest
         ]
     )
 def test_includeme_simple_settings(key, value):
-    from pyramid_list_pagination import pagination
+    from pyramid_listing import pagination
     config = DummyConfig({key: value})
     pagination.includeme(config)
     assert getattr(pagination.Pagination, key) == value
 
 
 def test_includeme_window_size_setting():
-    from pyramid_list_pagination import pagination
+    from pyramid_listing import pagination
     config = DummyConfig({'page_window_size': 11})
     pagination.includeme(config)
     assert pagination.Pagination.page_window_left == 5
@@ -34,7 +34,7 @@ def test_includeme_window_size_setting():
 
 
 def test_includeme_asymetric_window_precedence_over_window_size():
-    from pyramid_list_pagination import pagination
+    from pyramid_listing import pagination
     config = DummyConfig({
         'page_window_left': 2,
         'page_window_right': 7,
