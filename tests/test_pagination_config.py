@@ -10,10 +10,7 @@ from . import DummyConfig, DummyRequest
 
 @pytest.mark.parametrize(
     'key,value',[
-        ('current_page_request_key', 'test_cprk'),
         ('items_per_page_default', 123),
-        ('items_per_page_request_key', 'test_ipprk'),
-        ('items_per_page_session_key', 'test_ippsk'),
         ('page_window_left', 12),
         ('page_window_right', 15)
         ]

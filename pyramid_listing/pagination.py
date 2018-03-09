@@ -31,27 +31,18 @@ class Pagination:
     page can be configured in the pyramid .ini file with these parameters (and
     defaults):
 
-    Request.GET key for the page to show:
-    ``list_pagination.current_page_request_key = 'p'``
-
     Number of items shown on a result page:
     ``list_pagination.items_per_page_default = 12``
 
-    Request.GET key for the number of items shown on a page
-    ``list_pagination.items_per_page_request_key = 'n'``
-
-    Name of session variable to store the number of items shown on a page
-    ``list_pagination.items_per_page_session_key = 'items_per_page'``
-
-    The reasoning behind using a session to store this information is, that
-    if a visitor makes a selection for items per page, this is stored in the
-    session and can be retrieved as soon as the visitor accesses another list.
+    If session is configured in the pyramid app, it is used to store the number
+    of items to show per page. So, if a visitor makes a selection for items per
+    page, it can be retrieved as soon as the visitor accesses another list.
     This removes the (for me) annoying situation, where I need to reconfigure
     my items per page setting as soon as I select another category on a
     shopping site.
     If a session is not used in the pyramid app, this setting is ignored.
-    If you don't want to use the session to store this information, set it's
-    value to an empty string.
+    If you don't want to use the session to store this information, set the
+    ``items_per_page_session_key`` value to an empty string.
 
     A pagination window shows you some page numbers before and after the
     current page. For an example,  lets assume the current page is 10 and
@@ -187,10 +178,7 @@ def includeme(config):
     The available configuration settings are listed below::
 
         [app:main]
-        list_pagination.current_page_request_key = 'p'
         list_pagination.items_per_page_default = 12
-        list_pagination.items_per_page_request_key = 'n'
-        list_pagination.items_per_page_session_key = 'items_per_page'
         list_pagination.page_window_left = 3
         list_pagination.page_window_right = 3
 
@@ -210,15 +198,8 @@ def includeme(config):
         Pagination.page_window_right = half_window
 
     # transfer the available settings to the pagination class
-    items = [
-        ('current_page_request_key', str),
-        ('items_per_page_default', int),
-        ('items_per_page_request_key', str),
-        ('items_per_page_session_key', str),
-        ('page_window_left', int),
-        ('page_window_right', int)
-    ]
-    for what, type_ in items:
+    items = ['items_per_page_default', 'page_window_left', 'page_window_right']
+    for what in items:
         value = settings.get(f'{prefix}.{what}', None)
         if value is not None:
-            setattr(Pagination, what, type_(value))
+            setattr(Pagination, what, int(value))
