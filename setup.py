@@ -15,7 +15,7 @@ requirements = [ ]
 
 setup_requirements = ['pytest-runner', ]
 
-test_requirements = ['pytest', ]
+test_requirements = ['pytest', 'SQLAlchemy']
 
 setup(
     author='Holger Frey',

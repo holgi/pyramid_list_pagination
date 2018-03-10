@@ -79,7 +79,7 @@ def test_pagination_set_items_per_page_no_session(get, expected):
     )
 def test_pagination_set_items_per_page_with_session(get, session, expected):
     from pyramid_listing.pagination import Pagination
-    request = DummyRequest(get, session)
+    request = DummyRequest(get, session=session)
     pages = Pagination(request, 100)
     assert pages.items_per_page == expected
     assert request.session['items_per_page'] == expected

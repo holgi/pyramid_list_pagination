@@ -6,7 +6,7 @@ to provide isolation while configuring the pagination class
 
 import pytest
 
-from . import DummyConfig, DummyRequest
+from . import DummyConfig
 
 @pytest.mark.parametrize(
     'key,value',[

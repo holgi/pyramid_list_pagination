@@ -2,7 +2,6 @@
 
 import pytest
 
-
 class DummyConfig:
 
     def __init__(self, settings, prefix='pyramid_listing'):
@@ -14,7 +13,10 @@ class DummyConfig:
 
 class DummyRequest:
 
-    def __init__(self, data=None, session=None):
+    def __init__(self, data=None, dbsession=None, session=None):
         self.GET = data or {}
+        self.dbsession = dbsession
+        # only add a session property, if there is a session
+        # this emulates a pyramid application without session object
         if session is not None:
             self.session = session
