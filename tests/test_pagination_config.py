@@ -18,9 +18,11 @@ from . import DummyConfig
     )
 def test_includeme_simple_settings(key, value):
     from pyramid_listing import pagination
+    remember = getattr(pagination.Pagination, key)
     config = DummyConfig({key: value})
     pagination.includeme(config)
     assert getattr(pagination.Pagination, key) == value
+    setattr(pagination.Pagination, key, remember)
 
 
 def test_includeme_window_size_setting():
