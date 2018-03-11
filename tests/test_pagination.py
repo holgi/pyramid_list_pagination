@@ -85,6 +85,7 @@ def test_pagination_set_items_per_page_with_session(get, session, expected):
     assert pages.items_per_page == expected
     assert request.session['items_per_page'] == expected
 
+
 @pytest.mark.parametrize(
     'limit,items_per_page,expected', [
         (None, 0, 10),

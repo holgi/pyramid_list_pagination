@@ -3,7 +3,7 @@
 import pytest
 
 from . import DummyRequest
-from .database_fixture import Cheese, dbsession
+from .database_fixture import Cheese, dbsession  # noqa: F401
 
 
 @pytest.fixture
@@ -42,22 +42,26 @@ def test_base_class_inititalization_raises_error():
     with pytest.raises(NotImplementedError):
         SQLAlchemyListing(DummyRequest())
 
+
 def test_base_class_get_base_query_raises_error():
     from pyramid_listing.listing import SQLAlchemyListing
     with pytest.raises(NotImplementedError):
         SQLAlchemyListing.get_base_query(None, None)
+
 
 def test_base_class_filtered_query_returns_base_query():
     from pyramid_listing.listing import SQLAlchemyListing
     result = SQLAlchemyListing.get_filtered_query(None, 'Something', None)
     assert result == 'Something'
 
+
 def test_base_class_get_order_by_field():
     from pyramid_listing.listing import SQLAlchemyListing
     result = SQLAlchemyListing.get_order_by_field(None, 'Something')
     assert result is None
 
-def test_implementation_inititalization(dbsession, test_class):
+
+def test_implementation_inititalization(dbsession, test_class):  # noqa: F811
     from sqlalchemy.orm.query import Query
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
@@ -65,24 +69,31 @@ def test_implementation_inititalization(dbsession, test_class):
     assert isinstance(instance.base_query, Query)
     assert instance.base_query == instance.filtered_query
 
-def test_implementation_items_no_results_shortcut(dbsession, test_class):
+
+def test_implementation_items_no_results_shortcut(  # noqa: F811
+        dbsession,
+        test_class
+        ):
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
     instance.pages.items_total = 0
     assert instance.items() == []
 
-def test_implementation_items(dbsession, test_class):
+
+def test_implementation_items(dbsession, test_class):  # noqa: F811
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
     assert len(instance.items()) == 12  # default number of items per page
 
-def test_implementation_iter(dbsession, test_class):
+
+def test_implementation_iter(dbsession, test_class):  # noqa: F811
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
     assert instance.items() == list(instance)
 
-@pytest.mark.parametrize(
-    'f,d,e', [
+
+@pytest.mark.parametrize(  # noqa: F811
+    'field,direction,expected', [
         (None, None, ['Akkawi', 'Allgäuer Bergkäse', 'Areesh']),
         (None, 'asc', ['Akkawi', 'Allgäuer Bergkäse', 'Areesh']),
         (None, 'desc', ['Akkawi', 'Allgäuer Bergkäse', 'Areesh']),
@@ -111,42 +122,55 @@ def test_implementation_iter(dbsession, test_class):
         ('unknown', 'unknown', ['Akkawi', 'Allgäuer Bergkäse', 'Areesh']),
         ]
     )
-def test_implementation_ordered_query(dbsession, test_class, f, d, e):
+def test_implementation_ordered_query(
+        dbsession,
+        test_class,
+        field,
+        direction,
+        expected
+        ):
     get = {}
-    if f is not None:
-        get['o'] = f
-    if d is not None:
-        get['d'] = d
+    if field is not None:
+        get['o'] = field
+    if direction is not None:
+        get['d'] = direction
     request = DummyRequest(get, dbsession=dbsession)
     instance = test_class(request)
     items = instance.ordered_query.limit(3).offset(0).all()
-    assert [item.name for item in items] == e
-    if f == 'country':
-        assert instance.order_by == f
+    assert [item.name for item in items] == expected
+    if field == 'country':
+        assert instance.order_by == field
     else:
         assert instance.order_by == 'name'
     assert instance.order_dir in {'asc', 'desc'}
 
-def test_implementation_ordered_query_raises_exception(dbsession, test_class):
+
+def test_implementation_ordered_query_raises_exception(  # noqa: F811
+        dbsession,
+        test_class
+        ):
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
     instance.filtered_query = None
     with pytest.raises(NotImplementedError):
         instance.ordered_query
 
-def test_implementation_order_direction(dbsession, test_class):
+
+def test_implementation_order_direction(dbsession, test_class):  # noqa: F811
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
     instance.order_dir = 'some value'
     assert instance.order_direction == 'some value'
 
-def test_remember(dbsession, test_class):
+
+def test_remember(dbsession, test_class):  # noqa: F811
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
     instance.remember('some key', 'some value')
     assert instance._filter_params == {'some key': 'some value'}
 
-def test_implementation_query_params_defaults(dbsession, test_class):
+
+def test_implementation_query_params(dbsession, test_class):  # noqa: F811
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
     instance.pages.items_per_page = 1
@@ -163,7 +187,11 @@ def test_implementation_query_params_defaults(dbsession, test_class):
         }
     assert instance.query_params() == expected
 
-def test_implementation_query_params_override(dbsession, test_class):
+
+def test_implementation_query_params_override(  # noqa: F811
+        dbsession,
+        test_class
+        ):
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
     instance.pages.items_per_page = 1
@@ -180,7 +208,11 @@ def test_implementation_query_params_override(dbsession, test_class):
         }
     assert instance.query_params(n=10, p=20) == expected
 
-def test_implementation_query_params_override_with_none(dbsession, test_class):
+
+def test_implementation_query_params_removal_with_none(  # noqa: F811
+        dbsession,
+        test_class
+        ):
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
     instance.pages.items_per_page = 1
@@ -196,24 +228,33 @@ def test_implementation_query_params_override_with_none(dbsession, test_class):
         }
     assert instance.query_params(n=None) == expected
 
-def test_implementation_call(dbsession, test_class):
+
+def test_implementation_call(dbsession, test_class):  # noqa: F811
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
     instance.pages.items_per_page = 1
     instance.pages.current = 2
     assert instance.query_params(n=None) == instance(n=None)
 
-def test_implementation_calculate_pagination_error(dbsession, test_class):
+
+def test_implementation_calculate_pagination_error(  # noqa: F811
+        dbsession,
+        test_class
+        ):
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
     instance.filtered_query = None
     with pytest.raises(NotImplementedError):
         instance._calculate_pagination()
 
-def test_implementation_calculate_pagination(dbsession, test_class):
+
+def test_implementation_calculate_pagination(  # noqa: F811
+        dbsession,
+        test_class
+        ):
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
-    instance.pages == None
+    instance.pages = None
     instance._calculate_pagination()
     assert instance.pages is not None
     assert instance.pages.items_total == 68

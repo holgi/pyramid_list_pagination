@@ -3,7 +3,7 @@
 import pytest
 
 from . import DummyRequest
-from .database_fixture import Cheese, dbsession
+from .database_fixture import Cheese, dbsession  # noqa: F401
 
 
 class DummyModelResource:
@@ -20,12 +20,6 @@ def test_class():
             super().__init__(request, name, parent)
             self.default_order_by_field = 'name'
             self.default_order_by_direction = 'asc'
-
-        def __getitem__(self, key):
-            result = self.base_query.filter_by(name=key).first()
-            if not result:
-                raise KeyError
-            return result
 
         def resource_from_model(self, model):
             return DummyModelResource()
@@ -50,32 +44,36 @@ def test_class():
     return TestImplementation
 
 
-def test_initialization(dbsession, test_class):
+def test_initialization(dbsession, test_class):  # noqa: F811
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request, 'some name', 'any parent')
     assert instance.__name__ == 'some name'
     assert instance.__parent__ == 'any parent'
 
-def test_items(dbsession, test_class):
+
+def test_items(dbsession, test_class):  # noqa: F811
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
     assert len(instance.items()) == 12  # default number of items per page
     for item in instance.items():
         assert isinstance(item, DummyModelResource)
 
-def test_iter(dbsession, test_class):
+
+def test_iter(dbsession, test_class):  # noqa: F811
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
     assert len(list(instance)) == 12  # default number of items per page
     for item in instance:
         assert isinstance(item, DummyModelResource)
 
-def test_base_class_getitem_raises_error():
+
+def test_base_class_getitem_raises_error():  # noqa: F811
     from pyramid_listing.resource import ListingResource
     with pytest.raises(NotImplementedError):
         ListingResource.__getitem__(None, None)
 
-def test_base_class_resource_from_model_raises_error():
+
+def test_base_class_resource_from_model_raises_error():  # noqa: F811
     from pyramid_listing.resource import ListingResource
     with pytest.raises(NotImplementedError):
         ListingResource.resource_from_model(None, None)

@@ -44,6 +44,7 @@ def test_includeme_asymetric_window_precedence_over_window_size():
     assert pagination.Pagination.page_window_left == 2
     assert pagination.Pagination.page_window_right == 7
 
+
 @pytest.mark.parametrize(
     'limit,expected', [
         (42, 42),

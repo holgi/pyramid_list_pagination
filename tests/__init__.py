@@ -1,7 +1,5 @@
 '''Tests for `pyramid_listing` package.'''
 
-import pytest
-
 
 class DummyConfig:
 
