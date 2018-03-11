@@ -45,6 +45,18 @@ class Pagination:
     If you don't want to use the session to store this information, set the
     ``items_per_page_session_key`` value to an empty string.
 
+    Limit the number of items shown on a result page:
+    ``list_pagination.items_per_page_limit = 100`` or
+    ``list_pagination.items_per_page_limit = [12, 24, 48]``
+    If ``items_per_page_limit`` returned value is between 1
+    and the set items per page limit. If ``items_per_page`` is outside this
+    bounds, the default for items per page value is returned.
+    If ``items_per_page_limit`` is a set, list or tuple the returned value
+    is either a member of ``items_per_page_limit`` or the default value for
+    items per page.
+    If ``items_per_page_limit`` is not one of the mentioned types, the
+    value is only checked for the lower limit of 1 item per page
+
     A pagination window shows you some page numbers before and after the
     current page. For an example,  lets assume the current page is 10 and
     the size is 7, so the page window will be a list consisting of these
@@ -63,11 +75,14 @@ class Pagination:
     #: Request.GET key for the page to show
     current_page_request_key = 'p'
 
+    #: Request.GET key for the number of items shown on a page
+    items_per_page_request_key = 'n'
+
     #: Number of items shown on a result page
     items_per_page_default = 12
 
-    #: Request.GET key for the number of items shown on a page
-    items_per_page_request_key = 'n'
+    #: limit of items shown on a result page, could also be a list
+    items_per_page_limit = 100
 
     #: Name of session variable to store the number of items shown on a page
     items_per_page_session_key = 'items_per_page'
@@ -127,14 +142,42 @@ class Pagination:
                 self.items_per_page_request_key,
                 items_per_page_from_session
                 )
+            items_per_page = self._check_items_per_page_limit(items_per_page)
             request.session[self.items_per_page_session_key] = items_per_page
-            self.items_per_page = items_per_page
         else:
-            self.items_per_page = get_as_int(
+            items_per_page = get_as_int(
                 request.GET,
                 self.items_per_page_request_key,
                 self.items_per_page_default
                 )
+            items_per_page = self._check_items_per_page_limit(items_per_page)
+        self.items_per_page = items_per_page
+
+    def _check_items_per_page_limit(self, items_per_page):
+        ''' checks if the value for items_per_page is validate_page
+
+        :param int items_per_page: requested items per page
+        :returns: items per page value respesting the set limits
+
+        If ``items_per_page_limit`` returned value is between 1
+        and the set items per page limit. If ``items_per_page`` is outside this
+        bounds, the default for items per page value is returned.
+
+        If ``items_per_page_limit`` is a set, list or tuple the returned value
+        is either a member of ``items_per_page_limit`` or the default value for
+        items per page.
+
+        If ``items_per_page_limit`` is not one of the mentioned types, the
+        value is only checked for the lower limit of 1 item per page
+        '''
+        is_ok = True
+        if isinstance(self.items_per_page_limit, int):
+            is_ok = (1 <= items_per_page <= self.items_per_page_limit)
+        elif hasattr(self.items_per_page_limit, '__contains__'):
+            is_ok = (items_per_page in self.items_per_page_limit)
+        else:
+            is_ok = (1 <= items_per_page)
+        return items_per_page if is_ok else self.items_per_page_default
 
     def calculate(self, requested_page):
         ''' calcualte all the values! '''
@@ -178,8 +221,12 @@ def includeme(config):
 
         [app:main]
         list_pagination.items_per_page_default = 12
+        # items_per_page_limit could also be only a single
+        # integer for just an upper limit
+        list_pagination.items_per_page_limit = [12, 24, 48]
         list_pagination.page_window_left = 3
         list_pagination.page_window_right = 3
+        list_pagingat
 
     Instead of defining ``page_window_left`` and ``page_window_right``,
     a single integer value for ``page_window_size`` can be specified for
@@ -196,7 +243,14 @@ def includeme(config):
         Pagination.page_window_left = half_window
         Pagination.page_window_right = half_window
 
-    # transfer the available settings to the pagination class
+    # set the items per page limit
+    items_limit = settings.get(f'{prefix}.items_per_page_limit', None)
+    if hasattr(items_limit, '__iter__'):
+        Pagination.items_per_page_limit = {int(i) for i in items_limit}
+    elif items_limit:
+        Pagination.items_per_page_limit = int(items_limit)
+
+    # transfer the other settings to the pagination class
     items = ['items_per_page_default', 'page_window_left', 'page_window_right']
     for what in items:
         value = settings.get(f'{prefix}.{what}', None)

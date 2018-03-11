@@ -41,3 +41,15 @@ def test_includeme_asymetric_window_precedence_over_window_size():
     pagination.includeme(config)
     assert pagination.Pagination.page_window_left == 2
     assert pagination.Pagination.page_window_right == 7
+
+@pytest.mark.parametrize(
+    'limit,expected', [
+        (42, 42),
+        ([12, 24, 48], {12, 24, 48})
+        ]
+    )
+def test_items_per_page_limit(limit, expected):
+    from pyramid_listing import pagination
+    config = DummyConfig({'items_per_page_limit': limit})
+    pagination.includeme(config)
+    assert pagination.Pagination.items_per_page_limit == expected

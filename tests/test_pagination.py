@@ -85,6 +85,31 @@ def test_pagination_set_items_per_page_with_session(get, session, expected):
     assert pages.items_per_page == expected
     assert request.session['items_per_page'] == expected
 
+@pytest.mark.parametrize(
+    'limit,items_per_page,expected', [
+        (None, 0, 10),
+        (None, 1, 1),
+        (None, 123, 123),
+        (50, 0, 10),
+        (50, 1, 1),
+        (50, 50, 50),
+        (50, 51, 10),
+        ({12, 24, 48}, 12, 12),
+        ({12, 24, 48}, 24, 24),
+        ({12, 24, 48}, 48, 48),
+        ({12, 24, 48}, 0, 10),
+        ({12, 24, 48}, 15, 10),
+        ({12, 24, 48}, 51, 10),
+        ]
+    )
+def test_check_items_per_page_limit(limit, items_per_page, expected):
+    from pyramid_listing.pagination import Pagination
+    request = DummyRequest()
+    pages = Pagination(request, 100)
+    pages.items_per_page_default = 10
+    pages.items_per_page_limit = limit
+    assert pages._check_items_per_page_limit(items_per_page) == expected
+
 
 @pytest.mark.parametrize(
     'count, page, items, expected', [
