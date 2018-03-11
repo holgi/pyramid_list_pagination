@@ -2,7 +2,8 @@
 
 import pytest
 
-from . import DummyConfig, DummyRequest
+from . import DummyRequest
+
 
 @pytest.mark.parametrize(
     'data,key,default,expected', [
@@ -55,7 +56,7 @@ def test_pagination_init_with_no_items():
 
 @pytest.mark.parametrize(
     'get,expected',
-    [({}, 12), ({'n': 25,}, 25), ({'n': 'no number'}, 12)]
+    [({}, 12), ({'n': 25}, 25), ({'n': 'no number'}, 12)]
     )
 def test_pagination_set_items_per_page_no_session(get, expected):
     from pyramid_listing.pagination import Pagination
@@ -65,16 +66,16 @@ def test_pagination_set_items_per_page_no_session(get, expected):
 
 
 @pytest.mark.parametrize(
-    'get,session,expected',[
+    'get,session,expected', [
         ({}, {}, 12),
-        ({'n': 25,}, {}, 25),
+        ({'n': 25}, {}, 25),
         ({'n': 'no number'}, {}, 12),
         ({}, {'items_per_page': 50}, 50),
         ({}, {'items_per_page': 'not a number'}, 12),
-        ({'n': 25,}, {'items_per_page': 50}, 25),
-        ({'n': 'no number',}, {'items_per_page': 50}, 50),
-        ({'n': 25,}, {'items_per_page': 'not a number'}, 25),
-        ({'n': 'no number',}, {'items_per_page': 'not a number'}, 12),
+        ({'n': 25}, {'items_per_page': 50}, 25),
+        ({'n': 'no number'}, {'items_per_page': 50}, 50),
+        ({'n': 25}, {'items_per_page': 'not a number'}, 25),
+        ({'n': 'no number'}, {'items_per_page': 'not a number'}, 12),
         ]
     )
 def test_pagination_set_items_per_page_with_session(get, session, expected):
@@ -196,4 +197,3 @@ def test_pagination_validate_page_returns_default_on_no_items():
     pages.first = 1
     pages.last = 3
     assert pages.validate_page(2, 'default') == 'default'
-

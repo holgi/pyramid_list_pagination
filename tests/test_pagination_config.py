@@ -8,8 +8,9 @@ import pytest
 
 from . import DummyConfig
 
+
 @pytest.mark.parametrize(
-    'key,value',[
+    'key,value', [
         ('items_per_page_default', 123),
         ('page_window_left', 12),
         ('page_window_right', 15)

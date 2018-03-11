@@ -2,6 +2,7 @@
 
 import pytest
 
+
 class DummyConfig:
 
     def __init__(self, settings, prefix='pyramid_listing'):

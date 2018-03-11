@@ -78,7 +78,6 @@ class Pagination:
     #: number of pages to the left on a page window
     page_window_right = 3
 
-
     def __init__(self, request, items_total):
         ''' initialization
 
@@ -105,7 +104,6 @@ class Pagination:
         self._set_items_per_page(request)
         page_nr = get_as_int(request.GET, self.current_page_request_key, 1)
         self.calculate(page_nr)
-
 
     def _set_items_per_page(self, request):
         ''' set number of items per page from session and / or request
