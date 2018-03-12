@@ -2,6 +2,13 @@
 History
 =======
 
+0.1.3 (2018-03-12)
+------------------
+
+* The classes and the includeme() function are now exposed in the __init__.py
+  file
+
+
 0.1.2 (2018-03-12)
 ------------------
 
