@@ -1,7 +1,10 @@
-from . import listing
+''' pyramid_listing.resource - result list as location aware resource '''
+
+from .listing import SQLAlchemyListing
+from .pagination import Pagination
 
 
-class ListingResource(listing.SQLAlchemyListing):
+class ListingResource(SQLAlchemyListing):
     ''' sql helper for result lists as location aware resources
 
     This base class can help to produce paginated results from SQLAlchemy
@@ -118,16 +121,22 @@ class ListingResource(listing.SQLAlchemyListing):
     :ivar sqlalchemy.query filtered_query: database query with custom filters
     '''
 
-    def __init__(self, request, name=None, parent=None):
+    def __init__(self,
+            request,
+            name=None,
+            parent=None,
+            pagination_class=Pagination
+            ):
         ''' Instance creation
 
         :param pyramid.Request request: request object
         :param str name: name of the resource for location awareness
         :param parent: parent resource for location awareness
+        :param pagination_class: class of the page clalculater to use
         '''
         self.__name__ = name
         self.__parent__ = parent
-        super().__init__(request)
+        super().__init__(request, pagination_class)
 
     def items(self):
         ''' returns a iterable of child resources for the page '''

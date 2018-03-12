@@ -1,6 +1,6 @@
 ''' pyramid_listing.listing - sql helper for result lists '''
 
-from . import pagination
+from .pagination import Pagination
 
 try:
     from sqlalchemy import asc, desc
@@ -105,7 +105,7 @@ class SQLAlchemyListing:
     #: Request.GET key for the direction to order the results
     request_key_order_by_direction = 'd'
 
-    def __init__(self, request):
+    def __init__(self, request, pagination_class=Pagination):
         ''' sql helper for result lists
 
         :param pyramid.Request request: request object
@@ -128,7 +128,7 @@ class SQLAlchemyListing:
         self.base_query = self.get_base_query(request)
         #: database query with custom filters
         self.filtered_query = self.get_filtered_query(self.base_query, request)
-        self._calculate_pagination()
+        self._calculate_pagination(pagination_class)
 
     def get_base_query(self, request):
         ''' setup of the basic database query
@@ -305,12 +305,14 @@ class SQLAlchemyListing:
         '''
         return self.query_params(**kwargs)
 
-    def _calculate_pagination(self):
+    def _calculate_pagination(self, pagination_class=Pagination):
         ''' calculate the pagination information
+
+        :params pagination_class: class for calculating pagination information
 
         may raise NotImplementedError if `self.filtered_query` is not set
         '''
         if not self.filtered_query:
             raise NotImplementedError('A filtered query is not set')
         items_total = self.filtered_query.count()
-        self.pages = pagination.Pagination(self.request, items_total)
+        self.pages = pagination_class(self.request, items_total)

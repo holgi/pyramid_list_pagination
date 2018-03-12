@@ -29,8 +29,8 @@ class Pagination:
     :ivar int limit: limit parameter for a sql query
 
     The settings for the pagination, like how many items should be shown on one
-    page can be configured in the pyramid .ini file with these parameters (and
-    defaults):
+    page can be configured via the ``.configure`` method with these parameters
+    (and defaults):
 
     Number of items shown on a result page:
     ``list_pagination.items_per_page_default = 12``
@@ -70,6 +70,10 @@ class Pagination:
     If you just want a symetric window, you could also specify just one value
     ``list_pagination.page_window_size``. If assymetric and simple size are
     defined, the asymetric definition takes precedence.
+
+    These settings can also be provided in a pyramid .ini file if you either
+    include ``pyramid_listing`` or ``pyramdi_listing.pagination`` in your
+    pyramid config.
     '''
 
     #: Request.GET key for the page to show
@@ -231,12 +235,12 @@ class Pagination:
         The available configuration settings and their default values are
         listed below::
 
-            items_per_page_default = 12
+            pyramid_listing.items_per_page_default = 12
             # items_per_page_limit could also be only a single
             # integer for just an upper limit
-            items_per_page_limit = [12, 24, 48]
-            page_window_left = 3
-            page_window_right = 3
+            pyramid_listing.items_per_page_limit = [12, 24, 48]
+            pyramid_listing.page_window_left = 3
+            pyramid_listing.page_window_right = 3
 
         Instead of defining ``page_window_left`` and ``page_window_right``,
         a single integer value for ``page_window_size`` can be specified for
