@@ -28,7 +28,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Framework :: Pyramid'
     ],
-    description='Pyramid Listing contains pyramid resources and helper functions for pagination of result lists',
+    description='Pyramid Listing contains pyramid resources and helpers for pagination of result lists',
     install_requires=requirements,
     license='Beerware',
     long_description=readme + '\n\n' + history,

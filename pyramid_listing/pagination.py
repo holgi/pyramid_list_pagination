@@ -25,7 +25,7 @@ class Pagination:
     :ivar int next: next page number
     :ivar int last: last page number
     :ivar list window: page window
-    :ivar int offset: offset parameter for a sql query
+    :ivar int offset: offset parameter for a sql query, zero based
     :ivar int limit: limit parameter for a sql query
 
     The settings for the pagination, like how many items should be shown on one
@@ -113,7 +113,7 @@ class Pagination:
 
         self.window = []  #: page window
 
-        self.offset = 0  #: offset parameter for a sql query
+        self.offset = 0  #: offset parameter for a sql query, zero based
         self.limit = 0  #: limit parameter for a sql query
 
         self._set_items_per_page(request)
