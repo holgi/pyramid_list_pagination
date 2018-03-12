@@ -180,7 +180,10 @@ class Pagination:
         return items_per_page if is_ok else self.items_per_page_default
 
     def calculate(self, requested_page):
-        ''' calcualte all the values! '''
+        ''' calcualte all the values!
+
+        :param int requested_page: the requested page number
+        '''
         # if there are no items to display, there is no need for a calculation
         if not self.items_total:
             return
@@ -208,10 +211,63 @@ class Pagination:
         self.limit = self.items_per_page
 
     def validate_page(self, page, default=None):
-        ''' checks if a page is not outside first and last page '''
+        ''' checks if a page is not outside first and last page
+
+        :param int page: page number to check
+        :param default: default value to return, if page outside limits
+        :returns int: page number if in range or default value
+        '''
         if self.items_total and self.first <= page <= self.last:
             return page
         return default
+
+    @classmethod
+    def configure(cls, settings, prefix='pyramid_listing.'):
+        ''' configure the pagination from a settings dict
+
+        :param dict settings: settings to apply
+        :param str prefix: prefix string for settings
+
+        The available configuration settings and their default values are
+        listed below::
+
+            items_per_page_default = 12
+            # items_per_page_limit could also be only a single
+            # integer for just an upper limit
+            items_per_page_limit = [12, 24, 48]
+            page_window_left = 3
+            page_window_right = 3
+
+        Instead of defining ``page_window_left`` and ``page_window_right``,
+        a single integer value for ``page_window_size`` can be specified for
+        a symetric page window
+        '''
+        # set the right values if a simple page window size is given
+        window_size = settings.get(f'{prefix}page_window_size', None)
+        if window_size is not None:
+            window_size = int(window_size)
+            half_window = window_size // 2
+            cls.page_window_left = half_window
+            cls.page_window_right = half_window
+
+        # set the items per page limit
+        items_limit = settings.get(f'{prefix}items_per_page_limit', None)
+        if hasattr(items_limit, '__iter__'):
+            cls.items_per_page_limit = {int(i) for i in items_limit}
+        elif items_limit:
+            cls.items_per_page_limit = int(items_limit)
+
+        # transfer the other settings to the pagination class
+        items = [
+            'items_per_page_default',
+            'page_window_left',
+            'page_window_right'
+            ]
+        for what in items:
+            value = settings.get(f'{prefix}{what}', None)
+            if value is not None:
+                setattr(cls, what, int(value))
+
 
 
 def includeme(config):
@@ -226,33 +282,13 @@ def includeme(config):
         list_pagination.items_per_page_limit = [12, 24, 48]
         list_pagination.page_window_left = 3
         list_pagination.page_window_right = 3
-        list_pagingat
 
     Instead of defining ``page_window_left`` and ``page_window_right``,
     a single integer value for ``page_window_size`` can be specified for
     a symetric page window
     '''
     settings = config.get_settings()
-    prefix = 'pyramid_listing'
+    prefix = 'pyramid_listing.'
+    Pagination.configure(settings, prefix)
 
-    # set the right values if a simple page window size is given
-    window_size = settings.get(f'{prefix}.page_window_size', None)
-    if window_size is not None:
-        window_size = int(window_size)
-        half_window = window_size // 2
-        Pagination.page_window_left = half_window
-        Pagination.page_window_right = half_window
 
-    # set the items per page limit
-    items_limit = settings.get(f'{prefix}.items_per_page_limit', None)
-    if hasattr(items_limit, '__iter__'):
-        Pagination.items_per_page_limit = {int(i) for i in items_limit}
-    elif items_limit:
-        Pagination.items_per_page_limit = int(items_limit)
-
-    # transfer the other settings to the pagination class
-    items = ['items_per_page_default', 'page_window_left', 'page_window_right']
-    for what in items:
-        value = settings.get(f'{prefix}.{what}', None)
-        if value is not None:
-            setattr(Pagination, what, int(value))
