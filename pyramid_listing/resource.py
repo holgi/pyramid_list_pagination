@@ -1,4 +1,63 @@
-''' pyramid_listing.resource - result list as location aware resource '''
+''' The ``pyramid_listing.resources`` modules provides a base class
+for simple (SQLAlchemy) results list as location aware pyramid resources.
+
+One of the my most beloved features of the pyramid framework are Ressources_,
+especially since they enable traversal style routing and simple access controll
+lists.
+
+The :class:`ListingResource` base class provided by this module extends the
+:class:`pyramid_listing.listing.SQLAlchemyListing` class. To define a result
+list as a resource, you subclass from :class:`ListingResource`, provide a
+``get_base_query()`` method (required by SQLAlchemyListing) and a
+``resource_from_model()`` method::
+
+    class DummyCheeseResource:
+
+        def __init__(self, model):
+            self.model = model
+
+
+    class SimplestCheeseListResource(ListingResource):
+
+        def base_query(self, request):
+            return request.dbsession.query(Cheese)
+
+        def resource_from_model(self, model):
+            return DummyCheeseResource(model)
+
+Instead of returning a list of pure database models when calling the
+``items()`` method, the result in this case will be a list of
+``DummyCheeseResources``.
+
+If you define a ``__getitem__`` method and provide location aware model
+resources, you'd have a resource tree for traversal style routing with
+pagination, ordering, etc::
+
+
+    class CheeseResource:
+
+        def __init__(self, model, parent):
+            self.model = model
+            self.__name__ == model.id
+            self.__parent__ == parent
+
+
+    class CheeseListResource(ListingResource):
+
+        def base_query(self, request):
+            return request.dbsession.query(Cheese)
+
+        def resource_from_model(self, model):
+            return CheeseResource(model, self)
+
+        def __getitem__(self, key):
+            model = self.request.dbsession.query(Cheese).get(key)
+            if model:
+                return self.resource_from_model(model)
+            raise KeyError
+
+.. _Ressources: https://docs.pylonsproject.org/projects/pyramid/en/latest/narr/resources.html
+'''
 
 from .listing import SQLAlchemyListing
 from .pagination import Pagination
@@ -108,6 +167,7 @@ class ListingResource(SQLAlchemyListing):
 
 
     :param pyramid.Request request: request object
+    :param pagination_class: class of the pagination calculator to use
     :param str name: name of the resource for location awareness
     :param parent: parent resource for location awareness
 
@@ -123,16 +183,16 @@ class ListingResource(SQLAlchemyListing):
 
     def __init__(self,
             request,
+            pagination_class=Pagination,
             name=None,
-            parent=None,
-            pagination_class=Pagination
+            parent=None
             ):
         ''' Instance creation
 
         :param pyramid.Request request: request object
         :param str name: name of the resource for location awareness
         :param parent: parent resource for location awareness
-        :param pagination_class: class of the page clalculater to use
+        :param pagination_class: class of the pagination calculator to use
         '''
         self.__name__ = name
         self.__parent__ = parent
@@ -144,7 +204,7 @@ class ListingResource(SQLAlchemyListing):
 
     def __getitem__(self, key):
         ''' returns a single child resource from a model identified by key '''
-        raise NotImplementedError
+        raise KeyError
 
     def resource_from_model(self, model):
         ''' returns a child resource from an sqlalchemy model instance '''

@@ -17,7 +17,7 @@ def test_class():
     class TestImplementation(ListingResource):
 
         def __init__(self, request, name=None, parent=None):
-            super().__init__(request, name, parent)
+            super().__init__(request, name=name, parent=parent)
             self.default_order_by_field = 'name'
             self.default_order_by_direction = 'asc'
 
@@ -69,7 +69,7 @@ def test_iter(dbsession, test_class):  # noqa: F811
 
 def test_base_class_getitem_raises_error():  # noqa: F811
     from pyramid_listing.resource import ListingResource
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(KeyError):
         ListingResource.__getitem__(None, None)
 
 

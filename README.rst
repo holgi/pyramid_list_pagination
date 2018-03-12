@@ -23,7 +23,8 @@ database model in the pyramid application::
         name = Column(Text, nullable=False)
 
 To get a result list including pagination, just create a sub-class from
-``pyramid_listing.SQLAlchemyListing`` and define a ``get_base_query`` method::
+:class:`pyramid_listing.SQLAlchemyListing` and define a ``get_base_query``
+method::
 
     from pyramid_listing import SQLAlchemyListing
 
@@ -62,15 +63,9 @@ Features
 * base class for listings as location aware pyramid resources
 
 
-Pagination
-----------
-
-
-
-
-
 Credits
 -------
+
 
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 

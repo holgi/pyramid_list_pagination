@@ -1,4 +1,110 @@
-''' pyramid_listing.listing - sql helper for result lists '''
+''' The ``pyramid_listing.listing`` modules provides a base class
+for simple (SQLAlchemy) results list.
+
+To define a result list, you inherit from :class:`SQLAlchemyListing` and
+provide at least a ``get_base_query()`` method::
+
+    class MostSimpleListing(SQLAlchemyListing):
+
+        def get_base_query(self, request):
+            return request.dbsession.query(Cheese)
+
+The base query could also include a filter by method. Let's say the listing
+should only contain published articles, the method would look like this::
+
+    class OnlyPublishedArticles(SQLAlchemyListing):
+
+        def get_base_query(self, request):
+            return (
+                request.dbsession
+                .query(Article)
+                .filter_by(published==True)
+                )
+
+This offers pagination via the :class:`pyramid_listing.pagination.Pagination`
+class. The pagination information is exposed through the ``pages`` parameter::
+
+    listing = MostSimpleListing(request)
+    listing.pages.current == 1
+    listing.pages.next == 2
+
+If you want to provide filters via request.GET (e.g. a search functionality)
+you need to define a custom ``get_filtered_query()`` method::
+
+    class SearchableListing(SQLAlchemyListing):
+
+        def get_base_query(self, request):
+            return request.dbsession.query(Cheese)
+
+        def get_filtered_query(self, base_query, request):
+            search = request.GET.get('search')
+            if search is not None:
+                # remember this for creaing further query parameters
+                self.remember('search', search)
+                return base_query.filter(Cheese.name.ilike(search))
+            else:
+                return base_query
+
+Paginatination information is calculated on the filtered query, so no need to
+worry there.
+
+Besides paginatinon and filtering the third most common thing to do is to
+provide different ordering of the results, e.g. by name, country, date or
+anything. Therfore you should provide a ``get_order_field()`` method. For a
+nice ordering behaviour you should also set this two properties:
+``default_order_by_field`` and ``default_order_by_direction``::
+
+    class OrderedListing(SQLAlchemyListing):
+
+        def __init__(self, request):
+            super().__init__(request)
+            self.default_order_by_field = 'name'
+            self.default_order_by_direction = 'asc'
+
+        def get_base_query(self, request):
+            return request.dbsession.query(Cheese)
+
+        def get_order_by_field(self, identifier):
+            map = {
+                'name': Cheese.name
+                'country': Cheese.country
+                'type': Cheese.type
+                }
+            return map.get(identifier.lower(), None)
+
+The most tedious thing about pagination and ordering is creating the right
+query parameters for requests. Therfore the ``query_params()`` method is
+exposed::
+
+    assert request.GET['p'] == 2  # page number two
+    assert request.GET['n'] == 10  # ten items per page
+    assert request.GET['o'] == 'type'  # order by type
+    assert request.GET['d'] == 'desc'  # descending order
+
+    listing = OrderedListing(request)
+
+    # without modifications
+    listing.query_params() == {'p':2, 'n':10, 'o':'type', 'd':'desc'}
+
+    # page no 1
+    listing.query_params(p=1) == {'p':1, 'n':10, 'o':'type', 'd':'desc'}
+
+    # default sorting
+    listing.query_params(o=None, d=None) == {'p':2, 'n':10}
+
+Instead of of using ``query_params``, the instance is a callable. So the three
+parameters above could also be accessed by::
+
+    # without modifications
+    listing() == {'p':2, 'n':10, 'o':'type', 'd':'desc'}
+
+    # page no 1
+    listing(p=1) == {'p':1, 'n':10, 'o':'type', 'd':'desc'}
+
+    # default sorting
+    listing(o=None, d=None) == {'p':2, 'n':10}
+
+'''
 
 from .pagination import Pagination
 
@@ -90,6 +196,7 @@ class SQLAlchemyListing:
             )
 
     :param pyramid.Request request: request object
+    :param pagination_class: class of the pagination calculator to use
 
     :ivar pyramid.Request request: the current request object
     :ivar pyramid_listing.Pagination pages: pagination information
@@ -109,6 +216,7 @@ class SQLAlchemyListing:
         ''' sql helper for result lists
 
         :param pyramid.Request request: request object
+        :param pagination_class: class of the pagination calculator to use
         '''
         #: current pyramid.Request object
         self.request = request
@@ -180,18 +288,18 @@ class SQLAlchemyListing:
         '''
         return base_query
 
-    def get_order_by_field(self, order_by):
+    def get_order_by_field(self, identifier):
         ''' returns the SQLalchemy model field to sort by or None
 
-        :param str order_by:
-            a lowercase identifier for the field to sort by
+        :param str identifier:
+            a identifier for the field to sort by
         :returns:
             SQLalchemy model field or None
 
         This method should be implemented in a inherited class::
 
-            def get_sort_by_field(self, order_by):
-                if order_by == 'type':
+            def get_sort_by_field(self, identifier):
+                if identifier == 'type':
                     return Cheese.type
                 return None
         '''

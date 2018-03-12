@@ -1,4 +1,52 @@
-''' pyramid_listing.pagination - calculate pagination information '''
+''' The :class:`pyramid_listing.pagination.Pagination` class provided in this
+module calculates these page informations and exposes them as parameters:
+
+* `first`: number of the first page, or None if the query returned no items
+* `last`:  number of the last page, or None if the query returned no items
+* `current`: number of the current requested page or the first page, if the
+  requested page is out of bounds
+* `prev` (also available as `previous`): previous page or None if not available
+* `next`: next page or None if not available
+* `page window`: a list of pages, around and including the current one
+* `offset`: zero based offset for sql queries
+* `limit`: limit for sql queries
+* `items_total`: total number of items in the query with no limit applied
+* `items_per_page`: number of results displayed per page
+
+The current page and the number of items per page are taken from the
+``pyramid.request.GET`` parameters. The number of items per page are also
+stored in a session if the request object exposes a `session` parameter. This
+removes the annoying situation, where you selected a value for number of items
+shown in a result list and the next list you does not respect this selection.
+
+The default and limit for items per page can be configured by the
+``configure()`` method of the class or by providing the settings in an pyramid
+.ini file and including `pyramid_listing` or `pyramid_listing.pagination` in
+the pyramid configuration.
+
+The size and symmetry of the page window can also be configured using the same
+mechanism.
+
+Simple usage example::
+
+    from pyramid_listing.pagination import Pagination
+
+    assert request.GET['p'] == 5   # page nr. 5
+    assert request.GET['n'] == 10  # ten items per page
+
+    items_total = request.dbsession.query(Cheese).count()  # 123 items
+
+    pages = Pagination(request, items_total)
+    pages.items_total == 123
+    pages.items_per_page == 10
+    pages.first == 1
+    pages.prev == 4
+    pages.current == 5
+    pages.next == 6
+    pages.last == 13
+    pages.window == [3, 4, 5, 5, 7]
+
+'''
 
 
 def get_as_int(store, key, default):
