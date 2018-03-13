@@ -21,7 +21,7 @@ setup(
     author='Holger Frey',
     author_email='mail@holgerfrey.de',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'License :: Other/Proprietary License',
