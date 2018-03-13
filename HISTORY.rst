@@ -2,6 +2,11 @@
 History
 =======
 
+0.1.5 (2018-03-13)
+-----------------
+* code adjustments after liniting
+
+
 0.1.4 (2018-03-13)
 -----------------
 * fixed bug where settings as strings were not parsed correctly
