@@ -12,10 +12,11 @@ def test_class():
 
     class TestImplementation(SQLAlchemyListing):
 
+        default_order_by_field = 'name'
+        default_order_by_direction = 'asc'
+
         def __init__(self, request):
             super().__init__(request)
-            self.default_order_by_field = 'name'
-            self.default_order_by_direction = 'asc'
 
         def get_base_query(self, request):
             return request.dbsession.query(Cheese)
@@ -143,17 +144,6 @@ def test_implementation_ordered_query(
     else:
         assert instance.order_by == 'name'
     assert instance.order_dir in {'asc', 'desc'}
-
-
-def test_implementation_ordered_query_raises_exception(  # noqa: F811
-        dbsession,
-        test_class
-        ):
-    request = DummyRequest(dbsession=dbsession)
-    instance = test_class(request)
-    instance.filtered_query = None
-    with pytest.raises(NotImplementedError):
-        instance.ordered_query
 
 
 def test_implementation_order_direction(dbsession, test_class):  # noqa: F811

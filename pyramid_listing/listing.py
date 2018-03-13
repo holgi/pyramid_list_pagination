@@ -22,7 +22,7 @@ should only contain published articles, the method would look like this::
                 )
 
 This offers pagination via the :class:`pyramid_listing.pagination.Pagination`
-class. The pagination information is exposed through the ``pages`` parameter::
+class. The pagination information is exposed through the ``pages`` property::
 
     listing = MostSimpleListing(request)
     listing.pages.current == 1
@@ -41,7 +41,8 @@ you need to define a custom ``get_filtered_query()`` method::
             if search is not None:
                 # remember this for creaing further query parameters
                 self.remember('search', search)
-                return base_query.filter(Cheese.name.ilike(search))
+                term = f'%{search}%'
+                return base_query.filter(Cheese.name.ilike(term))
             else:
                 return base_query
 
@@ -51,15 +52,16 @@ worry there.
 Besides paginatinon and filtering the third most common thing to do is to
 provide different ordering of the results, e.g. by name, country, date or
 anything. Therfore you should provide a ``get_order_field()`` method. For a
-nice ordering behaviour you should also set this two properties:
+nice ordering behaviour you should also set this two class properties:
 ``default_order_by_field`` and ``default_order_by_direction``::
 
     class OrderedListing(SQLAlchemyListing):
 
+        default_order_by_field = 'name'
+        default_order_by_direction = 'asc'
+
         def __init__(self, request):
             super().__init__(request)
-            self.default_order_by_field = 'name'
-            self.default_order_by_direction = 'asc'
 
         def get_base_query(self, request):
             return request.dbsession.query(Cheese)
@@ -70,7 +72,7 @@ nice ordering behaviour you should also set this two properties:
                 'country': Cheese.country
                 'type': Cheese.type
                 }
-            return map.get(identifier.lower(), None)
+            return map.get(identifier, None)
 
 The most tedious thing about pagination and ordering is creating the right
 query parameters for requests. Therfore the ``query_params()`` method is
@@ -127,7 +129,7 @@ class SQLAlchemyListing:
 
     If you implement ordering of the results with the
     :func:`get_order_by_field()` method, it is highly recommended to set the
-    `default_order_by_field` and `default_order_by_direction` properties.
+    `default_order_by_field` and `default_order_by_direction` class properties.
 
     An example::
 
@@ -138,10 +140,11 @@ class SQLAlchemyListing:
 
         class CheeseList(SQLAlchemyListing):
 
+            default_order_by_field = 'name'
+            default_order_by_direction = 'asc'
+
             def __init__(self, request):
                 super().__init__(request)
-                self.default_order_by_field = 'name'
-                self.default_order_by_direction = 'asc'
 
             def get_base_query(self, request):
                 # show only in-stock items
@@ -161,12 +164,12 @@ class SQLAlchemyListing:
                     self.remember('type', cheese_type)
                 return query
 
-            def get_order_by_field(self, order_by):
-                if order_by.lower() == 'name':
+            def get_order_by_field(self, identifier):
+                if identifier.lower() == 'name':
                     return Cheeses.name
-                if order_by.lower() == 'manufacturer':
+                if identifier.lower() == 'manufacturer':
                     return Cheeses.manufacturer
-                if order_by.lower() == 'price':
+                if identifier.lower() == 'price':
                     return Cheeses.price_per_kilo
                 return None
 
@@ -198,10 +201,11 @@ class SQLAlchemyListing:
     :param pyramid.Request request: request object
     :param pagination_class: class of the pagination calculator to use
 
+    :cvar str default_order_by_field: default field to order the results by
+    :cvar str default_order_by_direction: default direction to order results
+
     :ivar pyramid.Request request: the current request object
     :ivar pyramid_listing.Pagination pages: pagination information
-    :ivar str default_order_by_field: default field to order the results by
-    :ivar str default_order_by_direction: default direction to order results
     :ivar sqlalchemy.query base_query: basic database query
     :ivar sqlalchemy.query filtered_query: database query with custom filters
     '''
@@ -211,6 +215,12 @@ class SQLAlchemyListing:
 
     #: Request.GET key for the direction to order the results
     request_key_order_by_direction = 'd'
+
+    #: string identifier of the field to order by
+    default_order_by_field = None
+
+    #: default direction to order by, either 'asc' or 'desc'
+    default_order_by_direction = None
 
     def __init__(self, request, pagination_class=Pagination):
         ''' sql helper for result lists
@@ -222,10 +232,6 @@ class SQLAlchemyListing:
         self.request = request
         #: pagination_information
         self.pages = None
-        #: string identifier of the field to order by
-        self.default_order_by_field = None
-        #: default direction to order by, either 'asc' or 'desc'
-        self.default_order_by_direction = None
         #: active order by field
         self.order_by = None
         #: active order by direction
@@ -236,6 +242,10 @@ class SQLAlchemyListing:
         self.base_query = self.get_base_query(request)
         #: database query with custom filters
         self.filtered_query = self.get_filtered_query(self.base_query, request)
+        #: database query with custom filters and custom order
+        self.ordered_query = self.get_ordered_query(
+            self.filtered_query, request
+            )
         self._calculate_pagination(pagination_class)
 
     def get_base_query(self, request):
@@ -263,6 +273,7 @@ class SQLAlchemyListing:
         ''' setup of the database query for a specific view
 
         :param sqlalchemy.Query base_query: the basic query for the listing
+        :param pyramid.Request request: request object
         :returns: sqlalchemy query with custom filters
 
         the filtered query extends the base query and applies filters for a
@@ -287,6 +298,51 @@ class SQLAlchemyListing:
 
         '''
         return base_query
+
+    def get_ordered_query(self, filtered_query, request):
+        ''' applies a sorting to the filtered query and returns it
+
+        :param sqlalchemy.Query filtered_query: query with custom filters
+        :param pyramid.Request request: request object
+        :returns: sqlalchemy query with ordering applied
+        '''
+        query = filtered_query
+
+        # apply sorting from request.GET parameters
+        order_param = self.request.GET.get(self.request_key_order_by_field)
+        order_field = self.get_order_by_field(order_param)
+
+        if order_field is not None:
+            order_dir = self.request.GET.get(
+                self.request_key_order_by_direction,
+                'asc'
+                )
+            order_func = desc if order_dir.lower().startswith('d') else asc
+            query = query.order_by(order_func(order_field))
+            # remember the applied ordering for url query parameters
+            self.order_by = order_param
+            self.order_dir = 'asc' if order_func is asc else 'desc'
+
+        # apply the default sorting if the current sorting field is other than
+        # the default sorting
+        default_field = self.get_order_by_field(self.default_order_by_field)
+        if default_field is None:
+            # no default order by field set, we can stop here
+            return query
+
+        if order_field is None or default_field != order_field:
+            # apply default sorting only if the requested field is not the
+            # default field
+            direction = self.default_order_by_direction or 'asc'
+            order_func = desc if direction.lower().startswith('d') else asc
+            query = query.order_by(order_func(default_field))
+
+        if order_field is None:
+            # only remember default, if no ordering is set from request
+            self.order_by = self.default_order_by_field
+            self.order_dir = 'asc' if order_func is asc else 'desc'
+
+        return query
 
     def get_order_by_field(self, identifier):
         ''' returns the SQLalchemy model field to sort by or None
@@ -319,46 +375,6 @@ class SQLAlchemyListing:
         # The result of __iter__ must be an iterator,
         # returning a list directly is not suitable.
         return (item for item in self.items())
-
-    @property
-    def ordered_query(self):
-        ''' applies a sorting to the filtered query and returns it
-
-        may raise 'NotImplementedError' if `self.filtered_query` is not set
-        '''
-        if not self.filtered_query:
-            raise NotImplementedError('A filtered query is not set')
-
-        query = self.filtered_query
-
-        # apply sorting from request.GET parameters
-        order_param = self.request.GET.get(self.request_key_order_by_field)
-        order_field = self.get_order_by_field(order_param)
-
-        if order_field is not None:
-            order_dir = self.request.GET.get(
-                self.request_key_order_by_direction,
-                'asc'
-                )
-            order_func = desc if order_dir.lower().startswith('d') else asc
-            query = query.order_by(order_func(order_field))
-            # remember the applied ordering for url query parameters
-            self.order_by = order_param
-            self.order_dir = 'asc' if order_func is asc else 'desc'
-
-        # apply the default sorting if the current sorting field is other than
-        # the default sorting
-        default_field = self.get_order_by_field(self.default_order_by_field)
-        if order_field is None or default_field != order_field:
-            direction = self.default_order_by_direction or 'asc'
-            order_func = desc if direction.lower().startswith('d') else asc
-            query = query.order_by(order_func(default_field))
-            if order_field is None:
-                # only remember default, if no ordering is set from request
-                self.order_by = self.default_order_by_field
-                self.order_dir = 'asc' if order_func is asc else 'desc'
-
-        return query
 
     @property
     def order_direction(self):
