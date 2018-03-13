@@ -50,12 +50,6 @@ pagination, ordering, etc::
         def resource_from_model(self, model):
             return CheeseResource(model, self)
 
-        def __getitem__(self, key):
-            model = self.base_query.get(key)
-            if model:
-                return self.resource_from_model(model)
-            raise KeyError
-
 .. _Ressources: https://docs.pylonsproject.org/projects/pyramid/en/latest/narr/resources.html
 '''
 

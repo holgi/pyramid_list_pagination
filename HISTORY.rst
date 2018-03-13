@@ -2,6 +2,13 @@
 History
 =======
 
+0.1.4 (2018-03-13)
+-----------------
+* fixed bug where settings as strings were not parsed correctly
+* changed default implementation of __getitem__() to use base_query
+* changed ordered_query from a calculated property to a real one
+
+
 0.1.3 (2018-03-12)
 ------------------
 

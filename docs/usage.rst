@@ -2,8 +2,8 @@
 Usage
 =====
 
-To use Pyramid List Pagination pyramid project with configuration from a .ini
-file::
+To use Pyramid List Pagination in a pyramid project with configuration loaded
+from an .ini file add this line to your main() function::
 
     config.include('pyramid_listing')
 

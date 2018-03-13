@@ -63,6 +63,14 @@ Features
 * base class for listings as location aware pyramid resources
 
 
+Example Project
+---------------
+
+To see this in action install the sample project from
+https://github.com/holgi/pyramid_listing_example
+and take a look at it
+
+
 Credits
 -------
 
