@@ -23,16 +23,19 @@ def test_class():
     'key,value', [
         ('items_per_page_default', 123),
         ('page_window_left', 12),
-        ('page_window_right', 15)
+        ('page_window_right', 15),
+        ('items_per_page_default', '123'),
+        ('page_window_left', '12'),
+        ('page_window_right', '15')
         ]
     )
 def test_configure_simple_settings(test_class, key, value):
     test_class.configure({'pyramid_listing.' + key: value})
-    assert getattr(test_class, key) == value
+    assert getattr(test_class, key) == int(value)
 
-
-def test_configure_window_size_setting(test_class):
-    test_class.configure({'pyramid_listing.page_window_size': 11})
+@pytest.mark.parametrize('size', [11, '11'])
+def test_configure_window_size_setting(test_class, size):
+    test_class.configure({'pyramid_listing.page_window_size': size})
     assert test_class.page_window_left == 5
     assert test_class.page_window_right == 5
 
@@ -51,7 +54,10 @@ def test_configure_asymetric_window_precedence_over_size(test_class):
 @pytest.mark.parametrize(
     'limit,expected', [
         (42, 42),
-        ([12, 24, 48], {12, 24, 48})
+        ('42', 42),
+        ([12, 24, 48], {12, 24, 48}),
+        (['13', '25', '49'], {13, 25, 49}),
+        ('12 24 48', {12, 24, 48})
         ]
     )
 def test_configure_items_per_page_limit(test_class, limit, expected):

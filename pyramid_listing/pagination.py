@@ -48,6 +48,18 @@ Simple usage example::
 
 '''
 
+try:
+    from pyramid.settings import aslist
+except ImportError:
+    def aslist(something):
+        ''' dummy replacement function for pyramid.settings.aslist '''
+        if isinstance(something, str):
+            return str(something).split()
+        elif hasattr(something, '__iter__'):
+            return something
+        else:
+            return [something]
+
 
 def get_as_int(store, key, default):
     ''' Return the value for key as integer from a dictionary, else default '''
@@ -304,10 +316,12 @@ class Pagination:
 
         # set the items per page limit
         items_limit = settings.get(f'{prefix}items_per_page_limit', None)
-        if hasattr(items_limit, '__iter__'):
-            cls.items_per_page_limit = {int(i) for i in items_limit}
-        elif items_limit:
-            cls.items_per_page_limit = int(items_limit)
+        if items_limit is not None:
+            items_list = aslist(items_limit)
+            if len(items_list) == 1:
+                cls.items_per_page_limit = int(items_list[0])
+            else:
+                cls.items_per_page_limit = {int(i) for i in items_list}
 
         # transfer the other settings to the pagination class
         items = [
@@ -340,7 +354,6 @@ def includeme(config):
     a symetric page window
     '''
     settings = config.get_settings()
-    prefix = 'pyramid_listing.'
-    Pagination.configure(settings, prefix)
+    Pagination.configure(settings, prefix='pyramid_listing.')
 
 
