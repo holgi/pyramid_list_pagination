@@ -176,11 +176,11 @@ class ListingResource(SQLAlchemyListing):
     '''
 
     def __init__(self,
-            request,
-            pagination_class=Pagination,
-            name=None,
-            parent=None
-            ):
+                 request,
+                 pagination_class=Pagination,
+                 name=None,
+                 parent=None
+                 ):
         ''' Instance creation
 
         :param pyramid.Request request: request object

@@ -5,11 +5,10 @@ from . import DummyConfig
 
 
 def test_imports():
-    from pyramid_listing import includeme
-    from pyramid_listing import Pagination
-    from pyramid_listing import SQLAlchemyListing
-    from pyramid_listing import ListingResource
-
+    from pyramid_listing import includeme  # noqa: F401
+    from pyramid_listing import Pagination  # noqa: F401
+    from pyramid_listing import SQLAlchemyListing  # noqa: F401
+    from pyramid_listing import ListingResource  # noqa: F401
 
 
 def test_include_me():

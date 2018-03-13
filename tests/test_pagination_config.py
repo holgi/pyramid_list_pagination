@@ -33,6 +33,7 @@ def test_configure_simple_settings(test_class, key, value):
     test_class.configure({'pyramid_listing.' + key: value})
     assert getattr(test_class, key) == int(value)
 
+
 @pytest.mark.parametrize('size', [11, '11'])
 def test_configure_window_size_setting(test_class, size):
     test_class.configure({'pyramid_listing.page_window_size': size})

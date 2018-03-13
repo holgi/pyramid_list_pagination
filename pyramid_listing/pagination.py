@@ -335,7 +335,6 @@ class Pagination:
                 setattr(cls, what, int(value))
 
 
-
 def includeme(config):
     ''' configure the pagination settings from a pyramid .ini file
 
@@ -355,5 +354,3 @@ def includeme(config):
     '''
     settings = config.get_settings()
     Pagination.configure(settings, prefix='pyramid_listing.')
-
-

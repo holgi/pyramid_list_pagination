@@ -73,11 +73,11 @@ def test_iter(dbsession, test_class):  # noqa: F811
     for item in instance:
         assert isinstance(item, DummyModelResource)
 
-@pytest.mark.parametrize('key', [1, 2, 3])
+
 def test_getitem(dbsession, test_class, key):  # noqa: F811
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
-    child = instance[key]
+    child = instance[1]
     assert isinstance(child, DummyModelResource)
 
 
