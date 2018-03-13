@@ -51,6 +51,13 @@ def test_initialization(dbsession, test_class):  # noqa: F811
     assert instance.__parent__ == 'any parent'
 
 
+def test_initialization_base_class_raises_error(dbsession):  # noqa: F811
+    from pyramid_listing.resource import ListingResource
+    request = DummyRequest(dbsession=dbsession)
+    with pytest.raises(NotImplementedError):
+        ListingResource(request)
+
+
 def test_items(dbsession, test_class):  # noqa: F811
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
@@ -66,11 +73,19 @@ def test_iter(dbsession, test_class):  # noqa: F811
     for item in instance:
         assert isinstance(item, DummyModelResource)
 
+@pytest.mark.parametrize('key', [1, 2, 3])
+def test_getitem(dbsession, test_class, key):  # noqa: F811
+    request = DummyRequest(dbsession=dbsession)
+    instance = test_class(request)
+    child = instance[key]
+    assert isinstance(child, DummyModelResource)
 
-def test_base_class_getitem_raises_error():  # noqa: F811
-    from pyramid_listing.resource import ListingResource
+
+def test_getitem_raises_key_error(dbsession, test_class):  # noqa: F811
+    request = DummyRequest(dbsession=dbsession)
+    instance = test_class(request)
     with pytest.raises(KeyError):
-        ListingResource.__getitem__(None, None)
+        instance['unknown']
 
 
 def test_base_class_resource_from_model_raises_error():  # noqa: F811

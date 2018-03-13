@@ -51,7 +51,7 @@ pagination, ordering, etc::
             return CheeseResource(model, self)
 
         def __getitem__(self, key):
-            model = self.request.dbsession.query(Cheese).get(key)
+            model = self.base_query.get(key)
             if model:
                 return self.resource_from_model(model)
             raise KeyError
@@ -203,7 +203,13 @@ class ListingResource(SQLAlchemyListing):
         return [self.resource_from_model(item) for item in super().items()]
 
     def __getitem__(self, key):
-        ''' returns a single child resource from a model identified by key '''
+        ''' returns a single child resource from a model identified by key
+
+        This is just the most simple implementation.
+        '''
+        model = self.base_query.get(key)
+        if model:
+            return self.resource_from_model(model)
         raise KeyError
 
     def resource_from_model(self, model):
