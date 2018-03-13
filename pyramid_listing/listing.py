@@ -347,10 +347,8 @@ class SQLAlchemyListing:
     def get_order_by_field(self, identifier):
         ''' returns the SQLalchemy model field to sort by or None
 
-        :param str identifier:
-            a identifier for the field to sort by
-        :returns:
-            SQLalchemy model field or None
+        :param str identifier: a identifier for the field to sort by
+        :returns: SQLalchemy model field or None
 
         This method should be implemented in a inherited class::
 
