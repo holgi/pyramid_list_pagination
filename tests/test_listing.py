@@ -157,7 +157,7 @@ def test_remember(dbsession, test_class):  # noqa: F811
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
     instance.remember('some key', 'some value')
-    assert instance._filter_params == {'some key': 'some value'}
+    assert instance.filters == {'some key': 'some value'}
 
 
 def test_implementation_query_params(dbsession, test_class):  # noqa: F811
@@ -167,7 +167,7 @@ def test_implementation_query_params(dbsession, test_class):  # noqa: F811
     instance.pages.current = 2
     instance.order_by = 'some field'
     instance.order_dir = 'some direction'
-    instance._filter_params = {'a filter': 'a value'}
+    instance.filters = {'a filter': 'a value'}
     expected = {
         'n': 1,
         'p': 2,
@@ -188,7 +188,7 @@ def test_implementation_query_params_override(  # noqa: F811
     instance.pages.current = 2
     instance.order_by = 'some field'
     instance.order_dir = 'some direction'
-    instance._filter_params = {'a filter': 'a value'}
+    instance.filters = {'a filter': 'a value'}
     expected = {
         'n': 10,
         'p': 20,
@@ -209,7 +209,7 @@ def test_implementation_query_params_removal_with_none(  # noqa: F811
     instance.pages.current = 2
     instance.order_by = 'some field'
     instance.order_dir = 'some direction'
-    instance._filter_params = {'a filter': 'a value'}
+    instance.filters = {'a filter': 'a value'}
     expected = {
         'p': 2,
         'o': 'some field',

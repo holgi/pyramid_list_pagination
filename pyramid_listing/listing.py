@@ -237,7 +237,7 @@ class SQLAlchemyListing:
         #: active order by direction
         self.order_dir = None
         #: remember these request parameters for active filters
-        self._filter_params = {}
+        self.filters = {}
         #: basic database query
         self.base_query = self.get_base_query(request)
         #: database query with custom filters
@@ -380,7 +380,7 @@ class SQLAlchemyListing:
 
     def remember(self, key, value):
         ''' remembers a key, value pair for constructing query parameters '''
-        self._filter_params[key] = value
+        self.filters[key] = value
 
     def query_params(self, **kwargs):
         ''' returns query parameters for the active filters, ordering and page
@@ -410,7 +410,7 @@ class SQLAlchemyListing:
             self.request_key_order_by_field: self.order_by,
             self.request_key_order_by_direction: self.order_dir
             }
-        params.update(self._filter_params)
+        params.update(self.filters)
         params.update(kwargs)
         return {k: v for k, v in params.items() if v is not None}
 

@@ -2,6 +2,16 @@
 History
 =======
 
+0.1.7 (2018-03-14)
+------------------
+* applied filters can now be accessed via ``SQLAlchemyListing.filters``
+
+
+0.1.6 (2018-03-13)
+------------------
+* updated documentation setup for readthedocs.org
+
+
 0.1.5 (2018-03-13)
 ------------------
 * code adjustments after liniting
