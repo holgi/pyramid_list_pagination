@@ -23,7 +23,7 @@ Features
 
 __author__ = 'Holger Frey'
 __email__ = 'mail@holgerfrey.de'
-__version__ = '0.1.6'
+__version__ = '0.1.7'
 
 
 from .listing import SQLAlchemyListing  # noqa: F401
