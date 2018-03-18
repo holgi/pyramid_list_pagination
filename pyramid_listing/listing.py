@@ -230,14 +230,14 @@ class SQLAlchemyListing:
         '''
         #: current pyramid.Request object
         self.request = request
-        #: pagination_information
-        self.pages = None
         #: active order by field
         self.order_by = None
         #: active order by direction
         self.order_dir = None
         #: remember these request parameters for active filters
         self.filters = {}
+        #: calculated pagination information
+        self._pages = None
         #: basic database query
         self.base_query = self.get_base_query(request)
         #: database query with custom filters
@@ -246,7 +246,6 @@ class SQLAlchemyListing:
         self.ordered_query = self.get_ordered_query(
             self.filtered_query, request
             )
-        self._calculate_pagination(pagination_class)
 
     def get_base_query(self, request):
         ''' setup of the basic database query
@@ -427,14 +426,19 @@ class SQLAlchemyListing:
         '''
         return self.query_params(**kwargs)
 
-    def _calculate_pagination(self, pagination_class=Pagination):
-        ''' calculate the pagination information
+    @property
+    def pages(self, pagination_class=Pagination):
+        ''' returns the pagination information
 
         :params pagination_class: class for calculating pagination information
+        :raises NotImplementedError: if `self.filtered_query` is not set
 
-        may raise NotImplementedError if `self.filtered_query` is not set
+        The first access of this property will trigger a query to get the
+        total number of items of the filtered query without pagination.
         '''
-        if not self.filtered_query:
-            raise NotImplementedError('A filtered query is not set')
-        items_total = self.filtered_query.count()
-        self.pages = pagination_class(self.request, items_total)
+        if self._pages is None:
+            if not self.filtered_query:
+                raise NotImplementedError('A filtered query is not set')
+            items_total = self.filtered_query.count()
+            self._pages = pagination_class(self.request, items_total)
+        return self._pages

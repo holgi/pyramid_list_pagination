@@ -235,7 +235,7 @@ def test_implementation_calculate_pagination_error(  # noqa: F811
     instance = test_class(request)
     instance.filtered_query = None
     with pytest.raises(NotImplementedError):
-        instance._calculate_pagination()
+        instance.pages
 
 
 def test_implementation_calculate_pagination(  # noqa: F811
@@ -244,7 +244,5 @@ def test_implementation_calculate_pagination(  # noqa: F811
         ):
     request = DummyRequest(dbsession=dbsession)
     instance = test_class(request)
-    instance.pages = None
-    instance._calculate_pagination()
     assert instance.pages is not None
     assert instance.pages.items_total == 68

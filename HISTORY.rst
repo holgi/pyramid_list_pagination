@@ -2,6 +2,15 @@
 History
 =======
 
+0.1.8 (2018-03-18)
+------------------
+* changed SQLAlchemyListing.pages to a calculated property:
+
+  Just creating a SQLAlchemyListing instance does not automatically trigger
+  a database query. It will only execute this first query if pagination
+  information is accessed, e.g. in a ordered query.
+
+
 0.1.7 (2018-03-14)
 ------------------
 * applied filters can now be accessed via ``SQLAlchemyListing.filters``
