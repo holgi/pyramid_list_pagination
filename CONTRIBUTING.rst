@@ -38,8 +38,8 @@ and "help wanted" is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-Pyramid List Pagination could always use more documentation, whether as part of the
-official Pyramid List Pagination docs, in docstrings, or even on the web in blog posts,
+pyramid_listing could always use more documentation, whether as part of the
+official pyramid_listing docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Submit Feedback
@@ -66,9 +66,8 @@ Ready to contribute? Here's how to set up `pyramid_listing` for local developmen
 
 3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
 
-    $ mkvirtualenv pyramid_listing
-    $ cd pyramid_listing/
-    $ python setup.py develop
+    `$ cd pyramid_listing/`
+    `$ make devenv`
 
 4. Create a branch for local development::
 
@@ -76,20 +75,22 @@ Ready to contribute? Here's how to set up `pyramid_listing` for local developmen
 
    Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass flake8 and the
+5. When you're done making changes, check that your changes passes the linters and the
    tests, including testing other Python versions with tox::
 
-    $ flake8 pyramid_listing tests
-    $ python setup.py test or py.test
-    $ tox
-
-   To get flake8 and tox, just pip install them into your virtualenv.
+    ```
+    $ make lint
+    $ make coverage
+    $ make tox
+    ```
 
 6. Commit your changes and push your branch to GitHub::
 
+    ```
     $ git add .
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
+    ```
 
 7. Submit a pull request through the GitHub website.
 
@@ -109,20 +110,19 @@ Before you submit a pull request, check that it meets these guidelines:
 Tips
 ----
 
-To run a subset of tests::
+To run a quick set of tests without coverage report
 
-$ py.test tests.test_pyramid_listing
-
+    $ make test
 
 Deploying
 ---------
 
 A reminder for the maintainers on how to deploy.
-Make sure all your changes are committed (including an entry in HISTORY.rst).
-Then run::
+Bump the version in `pyramid_listing/__init__.py` and
+make sure all your changes are committed (including an entry in HISTORY.rst).
 
-$ bumpversion patch # possible: major / minor / patch
-$ git push
-$ git push --tags
+	$ git tag <new version>
+	$ git push
+	$ git push --tags
+	$ flit publish
 
-Travis will then deploy to PyPI if tests pass.

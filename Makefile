@@ -45,24 +45,42 @@ clean-pyc: ## remove Python file artifacts
 	find . -name '__pycache__' -exec rm -fr {} +
 
 clean-test: ## remove test and coverage artifacts
+	rm -fr .pytest_cache/
 	rm -fr .tox/
 	rm -f .coverage
 	rm -fr htmlcov/
 
-lint: ## check style with flake8
+lint: ## reformat with black and check style with flake8
+	isort -rc pyramid_listing
+	isort -rc tests
+	black pyramid_listing tests
 	flake8 pyramid_listing tests
 
 test: ## run tests quickly with the default Python
-	py.test
+	pytest tests -x --disable-warnings -k "not app"
 
-test-all: ## run tests on every Python version with tox
-	tox
-
-coverage: ## check code coverage quickly with the default Python
-	coverage run --source pyramid_listing -m pytest
-	coverage report -m
+coverage: ## full test suite, check code coverage and open coverage report
+	pytest tests --cov=pyramid_listing
 	coverage html
 	$(BROWSER) htmlcov/index.html
+
+tox:  ## run fully isolated tests with tox
+	tox
+
+install:  ## install updated project.toml with flint
+	flit install --pth-file
+
+devenv: ## setup development environment
+	python3 -m venv --prompt pyramid_listing .venv
+	.venv/bin/pip3 install --upgrade pip
+	.venv/bin/pip3 install flit
+	.venv/bin/flit install --pth-file
+
+repo: devenv ## complete project setup with development environment and git repo
+	git init .
+	.venv/bin/pre-commit install
+	git add .
+	git commit -m "import of project template" --no-verify
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/pyramid_listing.rst
@@ -71,18 +89,3 @@ docs: ## generate Sphinx HTML documentation, including API docs
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	$(BROWSER) docs/_build/html/index.html
-
-servedocs: docs ## compile the docs watching for changes
-	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
-
-release: clean ## package and upload a release
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
-
-dist: clean ## builds source and wheel package
-	python setup.py sdist
-	python setup.py bdist_wheel
-	ls -l dist
-
-install: clean ## install the package to the active Python's site-packages
-	python setup.py install
