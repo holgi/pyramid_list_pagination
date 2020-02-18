@@ -1,4 +1,4 @@
-''' The :class:`pyramid_listing.pagination.Pagination` class provided in this
+""" The :class:`pyramid_listing.pagination.Pagination` class provided in this
 module calculates these page informations and exposes them as parameters:
 
 * `first`: number of the first page, or None if the query returned no items
@@ -46,23 +46,24 @@ Simple usage example::
     pages.last == 13
     pages.window == [3, 4, 5, 5, 7]
 
-'''
+"""
 
 try:
     from pyramid.settings import aslist
 except ImportError:
+
     def aslist(something):
-        ''' dummy replacement function for pyramid.settings.aslist '''
+        """ dummy replacement function for pyramid.settings.aslist """
         if isinstance(something, str):
             return str(something).split()
-        elif hasattr(something, '__iter__'):
+        elif hasattr(something, "__iter__"):
             return something
         else:
             return [something]
 
 
 def get_as_int(store, key, default):
-    ''' Return the value for key as integer from a dictionary, else default '''
+    """ Return the value for key as integer from a dictionary, else default """
     try:
         value = store.get(key, default)
         return int(value)
@@ -71,7 +72,7 @@ def get_as_int(store, key, default):
 
 
 class Pagination:
-    ''' calculates pagination information
+    """ calculates pagination information
 
     :param pyramid.Request request: request object
     :param int items_total: total number of items
@@ -134,13 +135,13 @@ class Pagination:
     These settings can also be provided in a pyramid .ini file if you either
     include ``pyramid_listing`` or ``pyramdi_listing.pagination`` in your
     pyramid config.
-    '''
+    """
 
     #: Request.GET key for the page to show
-    current_page_request_key = 'p'
+    current_page_request_key = "p"
 
     #: Request.GET key for the number of items shown on a page
-    items_per_page_request_key = 'n'
+    items_per_page_request_key = "n"
 
     #: Number of items shown on a result page
     items_per_page_default = 12
@@ -149,7 +150,7 @@ class Pagination:
     items_per_page_limit = 100
 
     #: Name of session variable to store the number of items shown on a page
-    items_per_page_session_key = 'items_per_page'
+    items_per_page_session_key = "items_per_page"
 
     #: number of pages to the left on a page window
     page_window_left = 3
@@ -158,11 +159,11 @@ class Pagination:
     page_window_right = 3
 
     def __init__(self, request, items_total):
-        ''' initialization
+        """ initialization
 
         :param pyramid.Request request: request object
         :param int items_total: total number of items
-        '''
+        """
         items_total = int(items_total)
         items_total = 0 if items_total < 1 else items_total
         self.items_total = items_total  #: total number of items
@@ -185,7 +186,7 @@ class Pagination:
         self.calculate(page_nr)
 
     def _set_items_per_page(self, request):
-        ''' set number of items per page from session and / or request
+        """ set number of items per page from session and / or request
 
         :param pyramid.Request request: request object
 
@@ -194,31 +195,31 @@ class Pagination:
         If a session is used, the value of the session is only used, if
         the request object does not specifiy a value. In either case, the
         current number of items is stored again in the session.
-        '''
-        if hasattr(request, 'session') and self.items_per_page_session_key:
+        """
+        if hasattr(request, "session") and self.items_per_page_session_key:
             items_per_page_from_session = get_as_int(
                 request.session,
                 self.items_per_page_session_key,
-                self.items_per_page_default
-                )
+                self.items_per_page_default,
+            )
             items_per_page = get_as_int(
                 request.GET,
                 self.items_per_page_request_key,
-                items_per_page_from_session
-                )
+                items_per_page_from_session,
+            )
             items_per_page = self._check_items_per_page_limit(items_per_page)
             request.session[self.items_per_page_session_key] = items_per_page
         else:
             items_per_page = get_as_int(
                 request.GET,
                 self.items_per_page_request_key,
-                self.items_per_page_default
-                )
+                self.items_per_page_default,
+            )
             items_per_page = self._check_items_per_page_limit(items_per_page)
         self.items_per_page = items_per_page
 
     def _check_items_per_page_limit(self, items_per_page):
-        ''' checks if the value for items_per_page is validate_page
+        """ checks if the value for items_per_page is validate_page
 
         :param int items_per_page: requested items per page
         :returns: items per page value respesting the set limits
@@ -233,21 +234,21 @@ class Pagination:
 
         If ``items_per_page_limit`` is not one of the mentioned types, the
         value is only checked for the lower limit of 1 item per page
-        '''
+        """
         is_ok = True
         if isinstance(self.items_per_page_limit, int):
-            is_ok = (1 <= items_per_page <= self.items_per_page_limit)
-        elif hasattr(self.items_per_page_limit, '__contains__'):
-            is_ok = (items_per_page in self.items_per_page_limit)
+            is_ok = 1 <= items_per_page <= self.items_per_page_limit
+        elif hasattr(self.items_per_page_limit, "__contains__"):
+            is_ok = items_per_page in self.items_per_page_limit
         else:
-            is_ok = (1 <= items_per_page)
+            is_ok = 1 <= items_per_page
         return items_per_page if is_ok else self.items_per_page_default
 
     def calculate(self, requested_page):
-        ''' calcualte all the values!
+        """ calcualte all the values!
 
         :param int requested_page: the requested page number
-        '''
+        """
         # if there are no items to display, there is no need for a calculation
         if not self.items_total:
             return
@@ -275,19 +276,19 @@ class Pagination:
         self.limit = self.items_per_page
 
     def validate_page(self, page, default=None):
-        ''' checks if a page is not outside first and last page
+        """ checks if a page is not outside first and last page
 
         :param int page: page number to check
         :param default: default value to return, if page outside limits
         :returns int: page number if in range or default value
-        '''
+        """
         if self.items_total and self.first <= page <= self.last:
             return page
         return default
 
     @classmethod
-    def configure(cls, settings, prefix='pyramid_listing.'):
-        ''' configure the pagination from a settings dict
+    def configure(cls, settings, prefix="pyramid_listing."):
+        """ configure the pagination from a settings dict
 
         :param dict settings: settings to apply
         :param str prefix: prefix string for settings
@@ -305,9 +306,9 @@ class Pagination:
         Instead of defining ``page_window_left`` and ``page_window_right``,
         a single integer value for ``page_window_size`` can be specified for
         a symetric page window
-        '''
+        """
         # set the right values if a simple page window size is given
-        window_size = settings.get(f'{prefix}page_window_size', None)
+        window_size = settings.get(f"{prefix}page_window_size", None)
         if window_size is not None:
             window_size = int(window_size)
             half_window = window_size // 2
@@ -315,7 +316,7 @@ class Pagination:
             cls.page_window_right = half_window
 
         # set the items per page limit
-        items_limit = settings.get(f'{prefix}items_per_page_limit', None)
+        items_limit = settings.get(f"{prefix}items_per_page_limit", None)
         if items_limit is not None:
             items_list = aslist(items_limit)
             if len(items_list) == 1:
@@ -325,18 +326,18 @@ class Pagination:
 
         # transfer the other settings to the pagination class
         items = [
-            'items_per_page_default',
-            'page_window_left',
-            'page_window_right'
-            ]
+            "items_per_page_default",
+            "page_window_left",
+            "page_window_right",
+        ]
         for what in items:
-            value = settings.get(f'{prefix}{what}', None)
+            value = settings.get(f"{prefix}{what}", None)
             if value is not None:
                 setattr(cls, what, int(value))
 
 
 def includeme(config):
-    ''' configure the pagination settings from a pyramid .ini file
+    """ configure the pagination settings from a pyramid .ini file
 
     The available configuration settings are listed below::
 
@@ -351,6 +352,6 @@ def includeme(config):
     Instead of defining ``page_window_left`` and ``page_window_right``,
     a single integer value for ``page_window_size`` can be specified for
     a symetric page window
-    '''
+    """
     settings = config.get_settings()
-    Pagination.configure(settings, prefix='pyramid_listing.')
+    Pagination.configure(settings, prefix="pyramid_listing.")

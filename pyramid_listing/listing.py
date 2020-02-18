@@ -1,4 +1,4 @@
-''' The ``pyramid_listing.listing`` modules provides a base class
+""" The ``pyramid_listing.listing`` modules provides a base class
 for simple (SQLAlchemy) results list.
 
 To define a result list, you inherit from :class:`SQLAlchemyListing` and
@@ -106,7 +106,7 @@ parameters above could also be accessed by::
     # default sorting
     listing(o=None, d=None) == {'p':2, 'n':10}
 
-'''
+"""
 
 from .pagination import Pagination
 
@@ -117,7 +117,7 @@ except ImportError:
 
 
 class SQLAlchemyListing:
-    ''' sql helper for result lists
+    """ sql helper for result lists
 
     This base class can help to produce paginated results from SQLAlchemy
     queries.
@@ -208,13 +208,13 @@ class SQLAlchemyListing:
     :ivar pyramid_listing.Pagination pages: pagination information
     :ivar sqlalchemy.query base_query: basic database query
     :ivar sqlalchemy.query filtered_query: database query with custom filters
-    '''
+    """
 
     #: Request.GET key for the field to order the results
-    request_key_order_by_field = 'o'
+    request_key_order_by_field = "o"
 
     #: Request.GET key for the direction to order the results
-    request_key_order_by_direction = 'd'
+    request_key_order_by_direction = "d"
 
     #: string identifier of the field to order by
     default_order_by_field = None
@@ -223,11 +223,11 @@ class SQLAlchemyListing:
     default_order_by_direction = None
 
     def __init__(self, request, pagination_class=Pagination):
-        ''' sql helper for result lists
+        """ sql helper for result lists
 
         :param pyramid.Request request: request object
         :param pagination_class: class of the pagination calculator to use
-        '''
+        """
         #: current pyramid.Request object
         self.request = request
         #: active order by field
@@ -245,10 +245,10 @@ class SQLAlchemyListing:
         #: database query with custom filters and custom order
         self.ordered_query = self.get_ordered_query(
             self.filtered_query, request
-            )
+        )
 
     def get_base_query(self, request):
-        ''' setup of the basic database query
+        """ setup of the basic database query
 
         :param pyramid.Request request: request object
         :returns: the basic sqlalchemy query for the listing
@@ -265,11 +265,11 @@ class SQLAlchemyListing:
                     .query(Cheeses)
                     .filter_by(in_stock==True)
                     )
-        '''
+        """
         raise NotImplementedError
 
     def get_filtered_query(self, base_query, request):
-        ''' setup of the database query for a specific view
+        """ setup of the database query for a specific view
 
         :param sqlalchemy.Query base_query: the basic query for the listing
         :param pyramid.Request request: request object
@@ -295,16 +295,16 @@ class SQLAlchemyListing:
                     self.remember('type', cheese_type)
                 return query
 
-        '''
+        """
         return base_query
 
     def get_ordered_query(self, filtered_query, request):
-        ''' applies a sorting to the filtered query and returns it
+        """ applies a sorting to the filtered query and returns it
 
         :param sqlalchemy.Query filtered_query: query with custom filters
         :param pyramid.Request request: request object
         :returns: sqlalchemy query with ordering applied
-        '''
+        """
         query = filtered_query
 
         # apply sorting from request.GET parameters
@@ -313,14 +313,13 @@ class SQLAlchemyListing:
 
         if order_field is not None:
             order_dir = self.request.GET.get(
-                self.request_key_order_by_direction,
-                'asc'
-                )
-            order_func = desc if order_dir.lower().startswith('d') else asc
+                self.request_key_order_by_direction, "asc"
+            )
+            order_func = desc if order_dir.lower().startswith("d") else asc
             query = query.order_by(order_func(order_field))
             # remember the applied ordering for url query parameters
             self.order_by = order_param
-            self.order_dir = 'asc' if order_func is asc else 'desc'
+            self.order_dir = "asc" if order_func is asc else "desc"
 
         # apply the default sorting if the current sorting field is other than
         # the default sorting
@@ -332,19 +331,19 @@ class SQLAlchemyListing:
         if order_field is None or default_field != order_field:
             # apply default sorting only if the requested field is not the
             # default field
-            direction = self.default_order_by_direction or 'asc'
-            order_func = desc if direction.lower().startswith('d') else asc
+            direction = self.default_order_by_direction or "asc"
+            order_func = desc if direction.lower().startswith("d") else asc
             query = query.order_by(order_func(default_field))
 
         if order_field is None:
             # only remember default, if no ordering is set from request
             self.order_by = self.default_order_by_field
-            self.order_dir = 'asc' if order_func is asc else 'desc'
+            self.order_dir = "asc" if order_func is asc else "desc"
 
         return query
 
     def get_order_by_field(self, identifier):
-        ''' returns the SQLalchemy model field to sort by or None
+        """ returns the SQLalchemy model field to sort by or None
 
         :param str identifier: a identifier for the field to sort by
         :returns: SQLalchemy model field or None
@@ -355,11 +354,11 @@ class SQLAlchemyListing:
                 if identifier == 'type':
                     return Cheese.type
                 return None
-        '''
+        """
         return None
 
     def items(self):
-        ''' returns a list of database items for the current page '''
+        """ returns a list of database items for the current page """
         if self.pages.items_total == 0:
             return []
 
@@ -368,7 +367,7 @@ class SQLAlchemyListing:
         return query.all()
 
     def __iter__(self):
-        ''' returns an iterable of database items for the current page '''
+        """ returns an iterable of database items for the current page """
         # The result of __iter__ must be an iterator,
         # returning a list directly is not suitable.
         return (item for item in self.items())
@@ -378,11 +377,11 @@ class SQLAlchemyListing:
         return self.order_dir
 
     def remember(self, key, value):
-        ''' remembers a key, value pair for constructing query parameters '''
+        """ remembers a key, value pair for constructing query parameters """
         self.filters[key] = value
 
     def query_params(self, **kwargs):
-        ''' returns query parameters for the active filters, ordering and page
+        """ returns query parameters for the active filters, ordering and page
 
         :param dict kwargs:
             values that override the current filter, ordering or page settings
@@ -402,19 +401,19 @@ class SQLAlchemyListing:
 
             next_ = listing({'p':2, 'type': None})
             next_ == {'p':2, 'n':12, 'o':'name', 'd':'asc'}
-        '''
+        """
         params = {
             self.pages.items_per_page_request_key: self.pages.items_per_page,
             self.pages.current_page_request_key: self.pages.current,
             self.request_key_order_by_field: self.order_by,
-            self.request_key_order_by_direction: self.order_dir
-            }
+            self.request_key_order_by_direction: self.order_dir,
+        }
         params.update(self.filters)
         params.update(kwargs)
         return {k: v for k, v in params.items() if v is not None}
 
     def __call__(self, **kwargs):
-        ''' returns query parameters for the active filters, ordering and page
+        """ returns query parameters for the active filters, ordering and page
 
         this is just a shorter version of SQLAlchemyListing.query_params()::
 
@@ -423,22 +422,22 @@ class SQLAlchemyListing:
             request.resource_url(self, query=listing.query_params(p=2))
             # url for page number two with __call__()
             request.resource_url(self, query=listing(p=2))
-        '''
+        """
         return self.query_params(**kwargs)
 
     @property
     def pages(self, pagination_class=Pagination):
-        ''' returns the pagination information
+        """ returns the pagination information
 
         :params pagination_class: class for calculating pagination information
         :raises NotImplementedError: if `self.filtered_query` is not set
 
         The first access of this property will trigger a query to get the
         total number of items of the filtered query without pagination.
-        '''
+        """
         if self._pages is None:
             if not self.filtered_query:
-                raise NotImplementedError('A filtered query is not set')
+                raise NotImplementedError("A filtered query is not set")
             items_total = self.filtered_query.count()
             self._pages = pagination_class(self.request, items_total)
         return self._pages

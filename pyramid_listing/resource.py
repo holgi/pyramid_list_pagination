@@ -1,4 +1,4 @@
-''' The ``pyramid_listing.resources`` modules provides a base class
+""" The ``pyramid_listing.resources`` modules provides a base class
 for simple (SQLAlchemy) results list as location aware pyramid resources.
 
 One of the my most beloved features of the pyramid framework are Ressources_,
@@ -51,14 +51,14 @@ pagination, ordering, etc::
             return CheeseResource(model, self)
 
 .. _Ressources: https://docs.pylonsproject.org/projects/pyramid/en/latest/narr/resources.html
-'''
+"""  # noqa: E501
 
 from .listing import SQLAlchemyListing
 from .pagination import Pagination
 
 
 class ListingResource(SQLAlchemyListing):
-    ''' sql helper for result lists as location aware resources
+    """ sql helper for result lists as location aware resources
 
     This base class can help to produce paginated results from SQLAlchemy
     queries as location aware resouces for traversal style routing in pyramid
@@ -173,39 +173,36 @@ class ListingResource(SQLAlchemyListing):
     :ivar str default_order_by_direction: default direction to order results
     :ivar sqlalchemy.query base_query: basic database query
     :ivar sqlalchemy.query filtered_query: database query with custom filters
-    '''
+    """
 
-    def __init__(self,
-                 request,
-                 pagination_class=Pagination,
-                 name=None,
-                 parent=None
-                 ):
-        ''' Instance creation
+    def __init__(
+        self, request, pagination_class=Pagination, name=None, parent=None
+    ):
+        """ Instance creation
 
         :param pyramid.Request request: request object
         :param str name: name of the resource for location awareness
         :param parent: parent resource for location awareness
         :param pagination_class: class of the pagination calculator to use
-        '''
+        """
         self.__name__ = name
         self.__parent__ = parent
         super().__init__(request, pagination_class)
 
     def items(self):
-        ''' returns a iterable of child resources for the page '''
+        """ returns a iterable of child resources for the page """
         return [self.resource_from_model(item) for item in super().items()]
 
     def __getitem__(self, key):
-        ''' returns a single child resource from a model identified by key
+        """ returns a single child resource from a model identified by key
 
         This is just the most simple implementation.
-        '''
+        """
         model = self.base_query.get(key)
         if model:
             return self.resource_from_model(model)
         raise KeyError
 
     def resource_from_model(self, model):
-        ''' returns a child resource from an sqlalchemy model instance '''
+        """ returns a child resource from an sqlalchemy model instance """
         raise NotImplementedError
