@@ -70,13 +70,4 @@ To see this in action install the sample project from
 https://github.com/holgi/pyramid_listing_example
 and take a look at it
 
-
-Credits
--------
-
-This package was created with Cookiecutter_ and the
-`audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
 .. _pyramid: https://trypyramid.com
