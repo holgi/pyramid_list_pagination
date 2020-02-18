@@ -23,7 +23,7 @@ database model in the pyramid application::
         name = Column(Text, nullable=False)
 
 To get a result list including pagination, just create a sub-class from
-:class:`pyramid_listing.SQLAlchemyListing` and define a ``get_base_query``
+``pyramid_listing.SQLAlchemyListing`` and define a ``get_base_query``
 method::
 
     from pyramid_listing import SQLAlchemyListing

@@ -10,7 +10,7 @@ dist-name = "pyramid_listing"
 author = "Holger Frey"
 author-email = "mail@holgerfrey.de"
 home-page = "https://github.com/holgi/pyramid_listing"
-description-file = "README.md"
+description-file = "README.rst"
 license = "Beerware"
 keywords = "pyramid list pagination resource"
 
