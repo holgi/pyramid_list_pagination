@@ -1,8 +1,8 @@
-=======================
-Pyramid List Pagination
-=======================
+===============
+Pyramid Listing
+===============
 
-Pyramid List Pagination contains pyramid resources and helpers for pagination
+Pyramid Listing contains pyramid resources and helpers for pagination
 of result lists.
 
 A lot of pyramid_ applications that use a (SQL) database need to list the result

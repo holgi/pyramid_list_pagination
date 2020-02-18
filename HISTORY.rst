@@ -2,6 +2,13 @@
 History
 =======
 
+0.2.0 (2020-02-18)
+------------------
+
+* removed support for legacy Python
+* packaging based on flit
+
+
 0.1.8 (2018-03-18)
 ------------------
 * changed SQLAlchemyListing.pages to a calculated property:
