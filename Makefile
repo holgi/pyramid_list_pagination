@@ -51,8 +51,8 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 
 lint: ## reformat with black and check style with flake8
-	isort -rc pyramid_listing
-	isort -rc tests
+	isort pyramid_listing
+	isort tests
 	black pyramid_listing tests
 	flake8 pyramid_listing tests
 
