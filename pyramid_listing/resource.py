@@ -58,7 +58,7 @@ from .pagination import Pagination
 
 
 class ListingResource(SQLAlchemyListing):
-    """ sql helper for result lists as location aware resources
+    """sql helper for result lists as location aware resources
 
     This base class can help to produce paginated results from SQLAlchemy
     queries as location aware resouces for traversal style routing in pyramid
@@ -178,7 +178,7 @@ class ListingResource(SQLAlchemyListing):
     def __init__(
         self, request, pagination_class=Pagination, name=None, parent=None
     ):
-        """ Instance creation
+        """Instance creation
 
         :param pyramid.Request request: request object
         :param str name: name of the resource for location awareness
@@ -194,7 +194,7 @@ class ListingResource(SQLAlchemyListing):
         return [self.resource_from_model(item) for item in super().items()]
 
     def __getitem__(self, key):
-        """ returns a single child resource from a model identified by key
+        """returns a single child resource from a model identified by key
 
         This is just the most simple implementation.
         """

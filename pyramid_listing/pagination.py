@@ -72,7 +72,7 @@ def get_as_int(store, key, default):
 
 
 class Pagination:
-    """ calculates pagination information
+    """calculates pagination information
 
     :param pyramid.Request request: request object
     :param int items_total: total number of items
@@ -159,7 +159,7 @@ class Pagination:
     page_window_right = 3
 
     def __init__(self, request, items_total):
-        """ initialization
+        """initialization
 
         :param pyramid.Request request: request object
         :param int items_total: total number of items
@@ -186,7 +186,7 @@ class Pagination:
         self.calculate(page_nr)
 
     def _set_items_per_page(self, request):
-        """ set number of items per page from session and / or request
+        """set number of items per page from session and / or request
 
         :param pyramid.Request request: request object
 
@@ -219,7 +219,7 @@ class Pagination:
         self.items_per_page = items_per_page
 
     def _check_items_per_page_limit(self, items_per_page):
-        """ checks if the value for items_per_page is validate_page
+        """checks if the value for items_per_page is validate_page
 
         :param int items_per_page: requested items per page
         :returns: items per page value respesting the set limits
@@ -245,7 +245,7 @@ class Pagination:
         return items_per_page if is_ok else self.items_per_page_default
 
     def calculate(self, requested_page):
-        """ calcualte all the values!
+        """calcualte all the values!
 
         :param int requested_page: the requested page number
         """
@@ -276,7 +276,7 @@ class Pagination:
         self.limit = self.items_per_page
 
     def validate_page(self, page, default=None):
-        """ checks if a page is not outside first and last page
+        """checks if a page is not outside first and last page
 
         :param int page: page number to check
         :param default: default value to return, if page outside limits
@@ -288,7 +288,7 @@ class Pagination:
 
     @classmethod
     def configure(cls, settings, prefix="pyramid_listing."):
-        """ configure the pagination from a settings dict
+        """configure the pagination from a settings dict
 
         :param dict settings: settings to apply
         :param str prefix: prefix string for settings
@@ -337,7 +337,7 @@ class Pagination:
 
 
 def includeme(config):
-    """ configure the pagination settings from a pyramid .ini file
+    """configure the pagination settings from a pyramid .ini file
 
     The available configuration settings are listed below::
 

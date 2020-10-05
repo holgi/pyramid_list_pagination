@@ -117,7 +117,7 @@ except ImportError:
 
 
 class SQLAlchemyListing:
-    """ sql helper for result lists
+    """sql helper for result lists
 
     This base class can help to produce paginated results from SQLAlchemy
     queries.
@@ -223,7 +223,7 @@ class SQLAlchemyListing:
     default_order_by_direction = None
 
     def __init__(self, request, pagination_class=Pagination):
-        """ sql helper for result lists
+        """sql helper for result lists
 
         :param pyramid.Request request: request object
         :param pagination_class: class of the pagination calculator to use
@@ -248,7 +248,7 @@ class SQLAlchemyListing:
         )
 
     def get_base_query(self, request):
-        """ setup of the basic database query
+        """setup of the basic database query
 
         :param pyramid.Request request: request object
         :returns: the basic sqlalchemy query for the listing
@@ -269,7 +269,7 @@ class SQLAlchemyListing:
         raise NotImplementedError
 
     def get_filtered_query(self, base_query, request):
-        """ setup of the database query for a specific view
+        """setup of the database query for a specific view
 
         :param sqlalchemy.Query base_query: the basic query for the listing
         :param pyramid.Request request: request object
@@ -299,7 +299,7 @@ class SQLAlchemyListing:
         return base_query
 
     def get_ordered_query(self, filtered_query, request):
-        """ applies a sorting to the filtered query and returns it
+        """applies a sorting to the filtered query and returns it
 
         :param sqlalchemy.Query filtered_query: query with custom filters
         :param pyramid.Request request: request object
@@ -343,7 +343,7 @@ class SQLAlchemyListing:
         return query
 
     def get_order_by_field(self, identifier):
-        """ returns the SQLalchemy model field to sort by or None
+        """returns the SQLalchemy model field to sort by or None
 
         :param str identifier: a identifier for the field to sort by
         :returns: SQLalchemy model field or None
@@ -381,7 +381,7 @@ class SQLAlchemyListing:
         self.filters[key] = value
 
     def query_params(self, **kwargs):
-        """ returns query parameters for the active filters, ordering and page
+        """returns query parameters for the active filters, ordering and page
 
         :param dict kwargs:
             values that override the current filter, ordering or page settings
@@ -413,7 +413,7 @@ class SQLAlchemyListing:
         return {k: v for k, v in params.items() if v is not None}
 
     def __call__(self, **kwargs):
-        """ returns query parameters for the active filters, ordering and page
+        """returns query parameters for the active filters, ordering and page
 
         this is just a shorter version of SQLAlchemyListing.query_params()::
 
@@ -427,7 +427,7 @@ class SQLAlchemyListing:
 
     @property
     def pages(self, pagination_class=Pagination):
-        """ returns the pagination information
+        """returns the pagination information
 
         :params pagination_class: class for calculating pagination information
         :raises NotImplementedError: if `self.filtered_query` is not set
